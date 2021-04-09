@@ -1,0 +1,27 @@
+{
+  "version": "0.0.9",
+  "name": "Trade App",
+  "manifest_version": 2,
+  "description": "Better trading on bitfinex.com",
+  "browser_action": {
+    "default_title": "Trade App",
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "16": "favicon/logo.png",
+    "48": "img/logo-48.png",
+    "128": "img/logo-128.png"
+  },
+  "web_accessible_resources": ["inject.html"],
+  "background": {
+    "page": "background.html"
+  },
+  "permissions": [
+    "contextMenus",
+    "tabs",
+    "activeTab",
+    "storage",
+    "https://trading.bitfinex.com/*"
+  ],
+  "content_security_policy": "default-src 'self'; script-src 'self'; style-src * 'unsafe-inline'; img-src 'self' data:;"
+}
