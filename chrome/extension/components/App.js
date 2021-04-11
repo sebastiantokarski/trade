@@ -45,7 +45,7 @@ const App = () => {
       console.log(msg);
     };
 
-    const wss = new WebSocket(process.env.REACT_APP_WEBSOCKET_API_HOST);
+    const wss = new WebSocket(WEBSOCKET_API_HOST);
 
     wss.onopen = () => wss.send(JSON.stringify(getWebsocketAuthData()));
 
