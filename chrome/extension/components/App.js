@@ -70,7 +70,7 @@ const App = () => {
 
   useEffect(async () => {
     const rawLedgers = await fetchData('v2/auth/r/ledgers/hist', {
-      limit: 200,
+      limit: 1000,
     });
 
     setLedgers(

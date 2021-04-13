@@ -46,7 +46,6 @@ const MarginForm = ({ lossProfitPerc }) => {
   return (
     <div>
       <InfoWrapper>
-        <Info className="bfx-red-text">Pamiętaj, to są Twoje ostatnie pieniądze</Info>
         {lossProfitPerc !== null && <Info className="bfx-red-text">USTAW STOP LOSS</Info>}
       </InfoWrapper>
       <div className="orderform__actions">
