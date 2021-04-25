@@ -11,7 +11,7 @@ const InfoWrapper = styled.div`
 const Info = styled.span`
   display: block;
   font-weight: bold;
-  font-size: 30px;
+  font-size: 24px;
   animation: flash linear 0.8s infinite;
 
   @keyframes flash {
@@ -27,7 +27,7 @@ const Info = styled.span`
   }
 `;
 
-const MarginForm = ({ lossProfitPerc }) => {
+const MarginForm = ({ position }) => {
   const [orders, setOrders] = useState([]);
 
   useEffect(async () => {
@@ -46,7 +46,11 @@ const MarginForm = ({ lossProfitPerc }) => {
   return (
     <div>
       <InfoWrapper>
-        {lossProfitPerc !== null && <Info className="bfx-red-text">USTAW STOP LOSS</Info>}
+        {position && position.lossProfitPerc !== null && (
+          <Info className="bfx-red-text">
+            STOP LOSS: {(position.basePrice - position.basePrice * 0.006).toFixed(3)}
+          </Info>
+        )}
       </InfoWrapper>
       <div className="orderform__actions">
         <button type="button" className="ui-button ui-button--green-o">
@@ -61,7 +65,7 @@ const MarginForm = ({ lossProfitPerc }) => {
 };
 
 MarginForm.propTypes = {
-  lossProfitPerc: PropTypes.number,
+  position: PropTypes.any,
 };
 
 export default MarginForm;

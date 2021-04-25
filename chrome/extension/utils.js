@@ -1,5 +1,12 @@
 import CryptoJS from 'crypto-js';
-import { API_KEY, API_SECRET_KEY, WEBSOCKET_API_KEY, WEBSOCKET_API_SECRET_KEY } from './config';
+import {
+  API_KEY,
+  API_SECRET_KEY,
+  API_ORIGIN,
+  WEBSOCKET_API_KEY,
+  WEBSOCKET_API_SECRET_KEY,
+  apiKey,
+} from './config';
 
 export const timeSince = (timestamp) => {
   const msPerMinute = 60 * 1000;
@@ -34,8 +41,6 @@ export const getTodayMidnightTime = () => {
 };
 
 export const getWebsocketAuthData = () => {
-  const apiKey = 'rSHoKUi01PqU6FvLi0a0nyl2RvDPjVINk8l3YfbamW9';
-
   const authNonce = Date.now() * 1000;
   const authPayload = 'AUTH' + authNonce;
   const authSig = CryptoJS.HmacSHA384(authPayload, WEBSOCKET_API_SECRET_KEY).toString(
@@ -43,7 +48,7 @@ export const getWebsocketAuthData = () => {
   );
 
   const payload = {
-    apiKey,
+    apiKey: WEBSOCKET_API_KEY,
     authSig,
     authNonce,
     authPayload,
@@ -67,7 +72,7 @@ export const getAuthHeaders = (apiPath, body) => {
 };
 
 export const fetchData = async (apiPath, body = {}) => {
-  const response = await fetch(`https://api.bitfinex.com/${apiPath}`, {
+  const response = await fetch(`${API_ORIGIN}/${apiPath}`, {
     method: 'POST',
     body: JSON.stringify(body),
     headers: getAuthHeaders(apiPath, body),

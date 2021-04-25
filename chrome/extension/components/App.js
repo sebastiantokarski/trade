@@ -14,6 +14,11 @@ const ContentContainer = styled.div`
   padding: 10px;
 `;
 
+const Value = styled.span`
+  display: inline-block;
+  margin: 0.1rem 1rem;
+`;
+
 const ChangeValue = styled.span`
   display: inline-block;
   margin: 0.1rem 1rem;
@@ -31,18 +36,24 @@ const App = () => {
   const [currDayBalance, setCurrDayBalance] = useState();
   const [lastbalanceChanges, setLastBalanceChanges] = useState([]);
   const [refreshCount, setRefreshCount] = useState(0);
+  const [isPositionOnPage, setPositionOnPage] = useState(false);
+  const [positionLossProfitPerc, setPositionLossProfitPerc] = useState(null);
 
-  useEffect(() => {
+  useEffect(function handleWebsocetConnection() {
     const performWebSocketMsg = (msg) => {
-      if (msg[1] === 'wu' && msg[2][0] === 'margin' && msg[2][1] === 'USD') {
+      if (msg.event === 'auth' && msg.status === 'FAILED') {
+        console.error('WEBSOCKET FAILED', msg);
+      } else if (msg[1] === 'wu' && msg[2][0] === 'margin' && msg[2][1] === 'USD') {
         setCurrBalance(msg[2][2]);
       } else if (msg[1] === 'pu') {
         setPosition({
+          symbol: msg[2][0],
+          basePrice: msg[2][3],
           lossProfitValue: msg[2][6],
           lossProfitPerc: msg[2][7],
+          leverage: msg[2][9],
         });
       }
-      console.log(msg);
     };
 
     const wss = new WebSocket(WEBSOCKET_API_HOST);
@@ -62,11 +73,60 @@ const App = () => {
     return () => wss.close();
   }, []);
 
-  useEffect(() => {
-    if (position) {
-      chrome.runtime.sendMessage({ badgeValue: position.lossProfitPerc });
-    }
-  }, [position]);
+  useEffect(function checkIfPositionsTableExists() {
+    const pageContent = document.getElementById('app-page-content');
+
+    const observer = new MutationObserver((mutations, currObserver) => {
+      const positionsTable = document.querySelector('[data-qa-id="positions-table"]');
+
+      if (!isPositionOnPage && positionsTable) {
+        setPositionOnPage(true);
+      } else if (isPositionOnPage && !positionsTable) {
+        setPositionOnPage(false);
+      }
+    });
+
+    observer.observe(pageContent, {
+      childList: true,
+      subtree: true,
+    });
+  }, []);
+
+  useEffect(
+    function updateBadge() {
+      if (!isPositionOnPage && position) {
+        chrome.runtime.sendMessage({ badgeValue: position.lossProfitPerc });
+      } else if (positionLossProfitPerc) {
+        chrome.runtime.sendMessage({ badgeValue: positionLossProfitPerc });
+      }
+    },
+    [position, positionLossProfitPerc, isPositionOnPage]
+  );
+
+  useEffect(
+    function updateBadgeIfPositionsTableExists() {
+      if (!isPositionOnPage) return;
+
+      const lossProfitPerc = document.querySelector(
+        '[data-qa-id="positions-table"] span:nth-child(8)'
+      );
+
+      const observer = new MutationObserver((mutations, currObserver) => {
+        if (lossProfitPerc) {
+          setPositionLossProfitPerc(Number(lossProfitPerc.textContent));
+        }
+      });
+
+      observer.observe(lossProfitPerc, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+      });
+
+      return () => observer && observer.disconnect();
+    },
+    [isPositionOnPage]
+  );
 
   useEffect(async () => {
     const rawLedgers = await fetchData('v2/auth/r/ledgers/hist', {
@@ -86,11 +146,10 @@ const App = () => {
   }, [refreshCount]);
 
   useEffect(() => {
-    console.log(ledgers);
     const getLastLedgersChanges = () => {
       const lastPositionLedgers = ledgers
         .filter((ledger) => ledger.description && ledger.description.match('Position closed'))
-        .slice(0, 11);
+        .slice(0, 21);
 
       return lastPositionLedgers
         .map((ledger, index) => {
@@ -102,10 +161,7 @@ const App = () => {
 
             return {
               value: balance,
-              change:
-                nextBalance > balance
-                  ? (balance / nextBalance - 1) * 100
-                  : (1 - nextBalance / balance) * 100,
+              change: ((balance - nextBalance) / nextBalance) * 100,
               timestamp,
             };
           }
@@ -120,10 +176,7 @@ const App = () => {
         .find((ledger) => ledger.timestamp < todayMidnight);
 
       if (currDayledger) {
-        //@TODO remove after '2021-02-27
-        setCurrDayBalance(
-          new Date().toJSON().slice(0, 10) === '2021-02-27' ? 112 : currDayledger.balance
-        );
+        setCurrDayBalance(currDayledger.balance);
       }
       if (lastLedgerBalance) {
         setCurrBalance(lastLedgerBalance.balance);
@@ -131,6 +184,14 @@ const App = () => {
       setLastBalanceChanges(getLastLedgersChanges());
     }
   }, [ledgers]);
+
+  const sumLastLossProfit = lastbalanceChanges.reduce((a, b) => a + b.change, 0).toFixed(2);
+  const sumLastProfit = lastbalanceChanges
+    .reduce((a, b) => (b.change > 0 ? a + b.change : a), 0)
+    .toFixed(2);
+  const sumLastLoss = lastbalanceChanges
+    .reduce((a, b) => (b.change < 0 ? a - b.change : a), 0)
+    .toFixed(2);
 
   return (
     <div style={{ overflow: 'visible' }}>
@@ -147,7 +208,7 @@ const App = () => {
               className="fa fa-refresh fa-fw bfx-blue"
               onClick={() => setRefreshCount(refreshCount + 1)}
             />
-            <span className="ui-collapsible__title">Jesteś tu po to żeby zarabiać</span>
+            <span className="ui-collapsible__title">Be careful</span>
           </div>
           <div style={{ width: '60%' }}>
             <BalanceSlider
@@ -159,20 +220,31 @@ const App = () => {
             />
           </div>
           <div style={{ width: '30%' }}>
-            <PositionStatus position={position} />
+            <PositionStatus
+              position={position}
+              isPositionOnPage={isPositionOnPage}
+              positionLossProfitPerc={positionLossProfitPerc}
+            />
           </div>
         </div>
       </div>
       <ContentWrapper>
         <ContentContainer style={{ width: '35%' }}>
-          <MarginForm lossProfitPerc={position && position.lossProfitPerc} />
+          <MarginForm position={position} />
         </ContentContainer>
         <ContentContainer style={{ width: '50%' }}>
           <BalanceChart ledgers={ledgers} />
         </ContentContainer>
         <ContentContainer style={{ width: '35%' }}>
           <SimpleBar style={{ maxHeight: '230px' }}>
-            Last changes
+            <div>
+              <span>Last changes</span>
+              <Value className="bfx-red-text">{sumLastLoss}%</Value>
+              <Value className="bfx-green-text">{sumLastProfit}%</Value>
+              <Value className={sumLastLossProfit > 0 ? 'bfx-green-text' : 'bfx-red-text'}>
+                {sumLastLossProfit}%
+              </Value>
+            </div>
             {lastbalanceChanges.map((data, index) => {
               const { change, value, timestamp } = data;
               const className = change > 0 ? 'bfx-green-text' : 'bfx-red-text';

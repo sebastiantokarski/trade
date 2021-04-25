@@ -12,7 +12,7 @@ const Value = styled.span`
   margin: 0 10px;
 `;
 
-const PositionStatus = ({ position }) => {
+const PositionStatus = ({ position, isPositionOnPage, positionLossProfitPerc }) => {
   if (!position) {
     return null;
   }
@@ -26,7 +26,7 @@ const PositionStatus = ({ position }) => {
         {lossProfitValue && lossProfitValue.toFixed(3)}$
       </Value>
       <Value className={lossProfitPerc > 0 ? 'bfx-green-text' : 'bfx-red-text'}>
-        {lossProfitPerc && lossProfitPerc.toFixed(2)}%
+        {positionLossProfitPerc && positionLossProfitPerc.toFixed(2)}%
       </Value>
     </ValuesContainer>
   );
@@ -37,6 +37,8 @@ PositionStatus.propTypes = {
     lossProfitValue: PropTypes.number,
     lossProfitPerc: PropTypes.number,
   }),
+  isPositionOnPage: PropTypes.bool,
+  positionLossProfitPerc: PropTypes.number,
 };
 
 export default PositionStatus;
