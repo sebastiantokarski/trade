@@ -16,7 +16,7 @@ import App from './components/App';
       const injectWrapper = document.createElement('div');
 
       injectWrapper.className = 'ui-panel bg-wrap injected-by-extension';
-      chartWrapper.parentNode.insertBefore(injectWrapper, chartWrapper.nextSibling);
+      chartWrapper.parentNode.insertBefore(injectWrapper, chartWrapper.nextSibling.nextSibling);
       currObserver.disconnect();
       render(<App />, injectWrapper);
     }
@@ -50,6 +50,7 @@ import App from './components/App';
 
     .noUi-tooltip {
       padding: 0;
+      bottom: unset !important;
     }
 
     .custom-tooltip {

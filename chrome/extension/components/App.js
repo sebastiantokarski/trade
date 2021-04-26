@@ -82,7 +82,9 @@ const App = () => {
       if (!isPositionOnPage && positionsTable) {
         setPositionOnPage(true);
       } else if (isPositionOnPage && !positionsTable) {
+        // @TODO
         setPositionOnPage(false);
+        chrome.runtime.sendMessage({ badgeValue: null });
       }
     });
 
@@ -104,13 +106,13 @@ const App = () => {
   );
 
   useEffect(
-    function updateBadgeIfPositionsTableExists() {
+    function getPositionStatusFromPage() {
       if (!isPositionOnPage) return;
 
       const lossProfitPerc = document.querySelector(
         '[data-qa-id="positions-table"] span:nth-child(8)'
       );
-
+      console.log('getPositionStatusFromPage', lossProfitPerc);
       const observer = new MutationObserver((mutations, currObserver) => {
         if (lossProfitPerc) {
           setPositionLossProfitPerc(Number(lossProfitPerc.textContent));

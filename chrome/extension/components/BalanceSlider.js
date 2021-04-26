@@ -33,7 +33,7 @@ const BalanceSlider = ({ data }) => {
     const currTooltip = document.querySelector('.custom-tooltip-curr');
 
     if (currTooltip) {
-      currTooltip.parentNode.style.bottom = '-30px';
+      currTooltip.parentNode.style.cssText = 'bottom: 120% !important';
     }
   }, [currBalanceModifier]);
 
