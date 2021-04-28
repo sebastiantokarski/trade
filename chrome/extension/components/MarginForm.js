@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { fetchData } from '../utils';
+import { getData, fetchData, getSymbolFromUrl } from '../utils';
+import { RadioButton } from './UI';
 
 const InfoWrapper = styled.div`
   text-align: center;
@@ -27,36 +28,125 @@ const Info = styled.span`
   }
 `;
 
+const RadioButton = styled.input`
+  position: initial !important;
+  visibility: initial !important;
+`;
+
 const MarginForm = ({ position }) => {
-  const [orders, setOrders] = useState([]);
+  const [risk, setRisk] = useState('standard');
 
-  useEffect(async () => {
-    const rawOrders = await fetchData('v2/auth/r/orders', {});
+  const manageRisk = (type, price) => {
+    let riskValue;
 
-    if (rawOrders && rawOrders[0]) {
-      setOrders(
-        rawOrders.map((order) => ({
-          id: order[0],
-        }))
-      );
+    switch (risk) {
+      case 'minimal':
+        riskValue = 0.0045;
+        break;
+      case 'standard':
+        riskValue = 0.008;
+        break;
+      case 'maximum':
+        riskValue = 0.015;
+        break;
     }
-    console.log(rawOrders);
-  }, []);
+
+    if (type === 'buy') {
+      return price * (1 - riskValue);
+    } else if (type === 'sell') {
+      return price * (1 + riskValue);
+    }
+  };
+
+  const getMarginInfo = async () => {
+    const marginInfoResponse = await fetchData(`v2/auth/r/info/margin/${getSymbolFromUrl()}`);
+    const getAmount = (value) => {
+      return value * 0.995;
+    };
+
+    console.log('marginInfoResponse', marginInfoResponse);
+
+    return {
+      maxBuy: getAmount(marginInfoResponse[2][2]),
+      maxSell: getAmount(marginInfoResponse[2][3]),
+    };
+  };
+
+  const retrievePosition = async () => {
+    const positionsResponse = await fetchData('v2/auth/r/positions');
+    const position = positionsResponse[0];
+
+    console.log('positionsResponse', positionsResponse);
+
+    return {
+      symbol: position[0],
+      status: position[1],
+      amount: position[2],
+      price: position[3],
+    };
+  };
+
+  const cancelStopOrder = async () => {
+    const ordersResponse = await fetchData('v2/auth/r/orders');
+    const stopOrderToCancel = ordersResponse.find((order) => order[8] === 'STOP');
+
+    if (stopOrderToCancel) {
+      await fetchData('v2/auth/w/order/cancel', { id: stopOrderToCancel[0] });
+    }
+  };
+
+  const handleMarginAction = async (type) => {
+    await cancelStopOrder();
+
+    const marginInfo = await getMarginInfo();
+    const amount = type === 'buy' ? marginInfo.maxBuy : marginInfo.maxSell * -1;
+
+    await fetchData('v2/auth/w/order/submit', {
+      type: 'MARKET',
+      symbol: getSymbolFromUrl(),
+      amount: amount.toFixed(2),
+    });
+
+    const position = await retrievePosition();
+
+    await fetchData('v2/auth/w/order/submit', {
+      type: 'STOP',
+      symbol: getSymbolFromUrl(),
+      amount: (position.amount * -1).toString(),
+      price: manageRisk(type, position.price).toFixed(4),
+    });
+  };
+
+  const handleRiskChange = (ev) => {
+    setRisk(ev.target.value);
+  };
 
   return (
     <div>
-      <InfoWrapper>
-        {position && position.lossProfitPerc !== null && (
-          <Info className="bfx-red-text">
-            STOP LOSS: {(position.basePrice - position.basePrice * 0.006).toFixed(3)}
-          </Info>
-        )}
-      </InfoWrapper>
+      <div>
+        <RadioButton name="risk" value="maximum" label="Maximum risk" onChange={handleRiskChange} />
+        <RadioButton
+          name="risk"
+          value="standard"
+          label="Standard risk"
+          onChange={handleRiskChange}
+          checked
+        />
+        <RadioButton name="risk" value="minimal" label="Minimal risk" onChange={handleRiskChange} />
+      </div>
       <div className="orderform__actions">
-        <button type="button" className="ui-button ui-button--green-o">
+        <button
+          type="button"
+          className="ui-button ui-button--green-o"
+          onClick={() => handleMarginAction('buy')}
+        >
           Margin Buy
         </button>
-        <button type="button" className="ui-button ui-button--red-o">
+        <button
+          type="button"
+          className="ui-button ui-button--red-o"
+          onClick={() => handleMarginAction('sell')}
+        >
           Margin Sell
         </button>
       </div>

@@ -32,6 +32,10 @@ export const timeSince = (timestamp) => {
   return `${Math.round(elapsed / msPerYear)} years ago`;
 };
 
+export const getSymbolFromUrl = () => {
+  return window.location.pathname.replace(/\/|:/g, '');
+};
+
 export const getTodayMidnightTime = () => {
   const todayMidnight = new Date();
 
@@ -83,4 +87,32 @@ export const fetchData = async (apiPath, body = {}) => {
     });
 
   return response;
+};
+
+export const getData = async (pathParams) => {
+  const response = await fetch(`${API_ORIGIN}/${pathParams}`)
+    .then((res) => res.json())
+    .catch((err) => {
+      console.log(err);
+    });
+
+  return response;
+};
+
+const getCurrTickerInfo = async () => {
+  const tickerResponse = await getData(`v2/ticker/${getSymbolFromUrl()}`);
+
+  return { bid: tickerResponse[0], ask: tickerResponse[2] };
+};
+
+const getCurrMarginWalletInfo = async () => {
+  const walletResponse = await fetchData('v2/auth/r/wallets');
+  const marginWalletInfo = walletResponse.find(
+    (wallet) => wallet[0] === 'margin' && wallet[1] === 'USD'
+  );
+
+  return {
+    total: marginWalletInfo ? marginWalletInfo[2] : 0,
+    available: marginWalletInfo ? marginWalletInfo[4] : 0,
+  };
 };
