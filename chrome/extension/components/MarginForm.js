@@ -123,7 +123,8 @@ const MarginForm = ({ position }) => {
       amount: amount.toFixed(2),
     });
 
-    const position = await retrievePositions()[0];
+    const positions = await retrievePositions()[0];
+    const position = positions[0];
 
     await fetchData('v2/auth/w/order/submit', {
       type: 'STOP',
