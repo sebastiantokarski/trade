@@ -1,50 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { fetchData, getSymbolFromUrl } from '../utils';
+import RiskOption from './RiskOption';
+import { riskOptions } from '../config';
 import styled from 'styled-components';
-import { getData, fetchData, getSymbolFromUrl } from '../utils';
-import { RadioButton } from './UI';
 
-const InfoWrapper = styled.div`
-  text-align: center;
-  margin: 1rem;
-`;
-
-const Info = styled.span`
-  display: block;
-  font-weight: bold;
-  font-size: 24px;
-  animation: flash linear 0.8s infinite;
-
-  @keyframes flash {
-    0% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.3;
-    }
-    100% {
-      opacity: 1;
-    }
+const MarginActionBtn = styled.button`
+  &[disabled] {
+    cursor: not-allowed;
   }
 `;
 
-const MarginForm = ({ position }) => {
-  const [risk, setRisk] = useState('standard');
+const MarginForm = ({ currBalance }) => {
+  const [risk, setRisk] = useState();
 
   const manageRisk = (type, price) => {
-    let riskValue;
-
-    switch (risk) {
-      case 'minimal':
-        riskValue = 0.0045;
-        break;
-      case 'standard':
-        riskValue = 0.008;
-        break;
-      case 'maximum':
-        riskValue = 0.015;
-        break;
-    }
+    const riskValue = riskOptions[risk];
 
     if (type === 'buy') {
       return price * (1 - riskValue);
@@ -141,38 +111,45 @@ const MarginForm = ({ position }) => {
   return (
     <div>
       <div>
-        <RadioButton name="risk" value="maximum" label="Maximum risk" onChange={handleRiskChange} />
-        <RadioButton
-          name="risk"
+        <RiskOption
+          value="maximum"
+          label="Maximum risk"
+          onChange={handleRiskChange}
+          currBalance={currBalance}
+        />
+        <RiskOption
           value="standard"
           label="Standard risk"
           onChange={handleRiskChange}
-          checked
+          currBalance={currBalance}
         />
-        <RadioButton name="risk" value="minimal" label="Minimal risk" onChange={handleRiskChange} />
+        <RiskOption
+          value="minimal"
+          label="Minimal risk"
+          onChange={handleRiskChange}
+          currBalance={currBalance}
+        />
       </div>
       <div className="orderform__actions">
-        <button
+        <MarginActionBtn
           type="button"
           className="ui-button ui-button--green-o"
           onClick={() => handleMarginAction('buy')}
+          disabled={!risk}
         >
           Margin Buy
-        </button>
-        <button
+        </MarginActionBtn>
+        <MarginActionBtn
           type="button"
           className="ui-button ui-button--red-o"
           onClick={() => handleMarginAction('sell')}
+          disabled={!risk}
         >
           Margin Sell
-        </button>
+        </MarginActionBtn>
       </div>
     </div>
   );
-};
-
-MarginForm.propTypes = {
-  position: PropTypes.any,
 };
 
 export default MarginForm;

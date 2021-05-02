@@ -232,7 +232,7 @@ const App = () => {
       </div>
       <ContentWrapper>
         <ContentContainer style={{ width: '35%' }}>
-          <MarginForm position={position} />
+          <MarginForm currBalance={currBalance} />
         </ContentContainer>
         <ContentContainer style={{ width: '50%' }}>
           <BalanceChart ledgers={ledgers} />

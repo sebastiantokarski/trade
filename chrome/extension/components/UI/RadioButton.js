@@ -1,8 +1,8 @@
 import React from 'react';
 
-const RadioButton = ({ name, value, label, onChange, checked }) => {
+const RadioButton = ({ name, value, label, onChange, checked, inline = true }) => {
   return (
-    <div>
+    <div style={{ display: inline ? 'inline-block' : 'block' }}>
       <input
         type="radio"
         name={name}
