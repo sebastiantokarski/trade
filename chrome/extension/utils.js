@@ -5,7 +5,6 @@ import {
   API_ORIGIN,
   WEBSOCKET_API_KEY,
   WEBSOCKET_API_SECRET_KEY,
-  apiKey,
 } from './config';
 
 export const timeSince = (timestamp) => {

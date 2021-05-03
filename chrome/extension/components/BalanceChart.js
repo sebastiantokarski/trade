@@ -1,5 +1,10 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
+import styled from 'styled-components';
+
+const ChartWrapper = styled.div`
+  padding-top: 40px;
+`;
 
 const BalanceChart = ({ ledgers }) => {
   const getChartData = () => {
@@ -20,46 +25,48 @@ const BalanceChart = ({ ledgers }) => {
   };
 
   return (
-    <Line
-      data={{
-        labels: Array.from(Array(getChartData().length).keys()).reverse(),
-        datasets: [
-          {
-            label: 'Kapitał',
-            fill: true,
-            pointRadius: 0,
-            borderWidth: 2,
-            backgroundColor: '#42A5F5',
-            borderColor: '#42A5F5',
-            data: getChartData(),
-          },
-        ],
-      }}
-      options={{
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          yAxes: [
+    <ChartWrapper>
+      <Line
+        data={{
+          labels: Array.from(Array(getChartData().length).keys()).reverse(),
+          datasets: [
             {
-              ticks: {
-                beginAtZero: true,
-              },
+              label: 'Kapitał',
+              fill: true,
+              pointRadius: 0,
+              borderWidth: 2,
+              backgroundColor: '#42A5F5',
+              borderColor: '#42A5F5',
+              data: getChartData(),
             },
           ],
-        },
-        legend: {
-          display: false,
-        },
-        showTooltips: true,
-        multiTooltipTemplate: '<%= value %>',
-        interaction: {
-          mode: 'index',
-        },
-        hover: {
-          mode: 'label',
-        },
-      }}
-    />
+        }}
+        options={{
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            yAxes: [
+              {
+                ticks: {
+                  beginAtZero: true,
+                },
+              },
+            ],
+          },
+          legend: {
+            display: false,
+          },
+          showTooltips: true,
+          multiTooltipTemplate: '<%= value %>',
+          interaction: {
+            mode: 'index',
+          },
+          hover: {
+            mode: 'label',
+          },
+        }}
+      />
+    </ChartWrapper>
   );
 };
 

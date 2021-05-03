@@ -1,8 +1,38 @@
 import React, { useState } from 'react';
 import { fetchData, getSymbolFromUrl } from '../utils';
+import { getMarginInfo, retrievePositions } from '../api';
 import RiskOption from './RiskOption';
 import { riskOptions } from '../config';
 import styled from 'styled-components';
+
+const MainWrapper = styled.div`
+  position: relative;
+  max-width: 370px;
+  padding: 20px;
+  border: 1px solid rgba(100, 100, 100, 0.3);
+`;
+
+const Title = styled.span`
+  position: absolute;
+  display: inline-block;
+  padding: 0 20px;
+  background-color: #1b262d;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -50%);
+  text-transform: uppercase;
+`;
+
+const Description = styled.p`
+  margin: 0 0 6px;
+`;
+
+const ClosePositionBtn = styled.button`
+  line-height: 12px;
+  width: 100%;
+  margin: 0;
+  outline: 2px solid #0f8fdafc;
+`;
 
 const MarginActionBtn = styled.button`
   &[disabled] {
@@ -20,55 +50,6 @@ const MarginForm = ({ currBalance }) => {
       return price * (1 - riskValue);
     } else if (type === 'sell') {
       return price * (1 + riskValue);
-    }
-  };
-
-  const getMarginInfo = async () => {
-    try {
-      const marginInfoResponse = await fetchData(`v2/auth/r/info/margin/${getSymbolFromUrl()}`);
-      const getSafeAmount = (value) => {
-        return value * 0.995;
-      };
-
-      return {
-        tradable_balance: marginInfoResponse[2][0],
-        gross_balance: marginInfoResponse[2][1],
-        buy: getSafeAmount(marginInfoResponse[2][2]),
-        sell: getSafeAmount(marginInfoResponse[2][3]),
-      };
-    } catch (ex) {
-      console.error('FAILED TO FETCH MARGIN INFO', ex);
-    }
-  };
-
-  const retrievePositions = async () => {
-    try {
-      const positionsResponse = await fetchData('v2/auth/r/positions');
-
-      return positionsResponse.map((position) => ({
-        symbol: position[0],
-        status: position[1],
-        amount: position[2],
-        price: position[3],
-        funding: position[4],
-        funding_type: position[5],
-        pl: position[6],
-        pl_perc: position[7],
-        price_liq: position[8],
-        leverage: position[9],
-        _PLACEHOLDER: position[10],
-        position_id: position[11],
-        mts_create: position[12],
-        mts_update: position[13],
-        _PLACEHOLDER: position[14],
-        type: position[15],
-        _PLACEHOLDER: position[16],
-        collateral: position[17],
-        collateral_min: position[18],
-        meta: position[19],
-      }));
-    } catch (ex) {
-      console.error('FAILED TO RETRIEVE POSITIONS', ex);
     }
   };
 
@@ -102,14 +83,26 @@ const MarginForm = ({ currBalance }) => {
       amount: (position.amount * -1).toString(),
       price: manageRisk(type, position.price).toFixed(4),
     });
+
+    setRisk();
   };
 
   const handleRiskChange = (ev) => {
     setRisk(ev.target.value);
   };
 
+  const handleClosePosition = () => {
+    const closeBtn = document.querySelector('[data-qa-id="positions-table"] button[data-qa-id]');
+
+    if (closeBtn) {
+      closeBtn.click();
+    }
+  };
+
   return (
-    <div>
+    <MainWrapper>
+      <Title>Order form</Title>
+      <Description>Select how much you can lose:</Description>
       <div>
         <RiskOption
           value="maximum"
@@ -148,7 +141,10 @@ const MarginForm = ({ currBalance }) => {
           Margin Sell
         </MarginActionBtn>
       </div>
-    </div>
+      <ClosePositionBtn type="button" className="ui-button" onClick={handleClosePosition}>
+        Close Position
+      </ClosePositionBtn>
+    </MainWrapper>
   );
 };
 

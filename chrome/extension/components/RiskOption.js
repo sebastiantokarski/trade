@@ -25,9 +25,7 @@ const RiskOption = ({ value, label, onChange, currBalance }) => {
       <RadioButton name="risk" value={value} label={label} onChange={onChange} />
       <div>
         <RiskValues className="bfx-red-text">- {lossInPerc.toFixed(2)}%</RiskValues>
-        <RiskValues className="bfx-red-text">
-          {currBalance && (currBalance - currBalance * (lossInPerc / 100)).toFixed(2)}$
-        </RiskValues>
+        <RiskValues className="bfx-red-text">{currBalance && lossInValue.toFixed(2)}$</RiskValues>
       </div>
     </RiskOptionWrapper>
   );

@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { BalanceChart, BalanceSlider, PositionStatus, MarginForm } from '../components';
 import styled from 'styled-components';
 import SimpleBar from 'simplebar-react';
-import { timeSince, getTodayMidnightTime, fetchData, getWebsocketAuthData } from '../utils';
+import { getLedgersHistory } from '../api';
+import { timeSince, getTodayMidnightTime, getWebsocketAuthData } from '../utils';
 import { WEBSOCKET_API_HOST } from '../config';
 
 const ContentWrapper = styled.div`
   display: flex;
-  height: 250px;
+  height: 260px;
   padding: 10px;
 `;
 const ContentContainer = styled.div`
@@ -131,20 +132,9 @@ const App = () => {
   );
 
   useEffect(async () => {
-    const rawLedgers = await fetchData('v2/auth/r/ledgers/hist', {
-      limit: 1000,
-    });
+    const ledgers = await getLedgersHistory(1000);
 
-    setLedgers(
-      rawLedgers.map((rawLedger) => ({
-        id: rawLedger[0],
-        currency: rawLedger[1],
-        timestamp: rawLedger[3],
-        amout: rawLedger[5],
-        balance: rawLedger[6],
-        description: rawLedger[8],
-      }))
-    );
+    setLedgers(ledgers);
   }, [refreshCount]);
 
   useEffect(() => {
@@ -234,7 +224,7 @@ const App = () => {
         <ContentContainer style={{ width: '35%' }}>
           <MarginForm currBalance={currBalance} />
         </ContentContainer>
-        <ContentContainer style={{ width: '50%' }}>
+        <ContentContainer style={{ width: '40%' }}>
           <BalanceChart ledgers={ledgers} />
         </ContentContainer>
         <ContentContainer style={{ width: '35%' }}>
