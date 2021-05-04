@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { BalanceChart, BalanceSlider, PositionStatus, MarginForm } from '../components';
 import styled from 'styled-components';
 import SimpleBar from 'simplebar-react';
+import { BalanceChart, BalanceSlider, PositionStatus, MarginForm } from '../components';
 import { getLedgersHistory } from '../api';
 import { timeSince, getTodayMidnightTime, getWebsocketAuthData } from '../utils';
 import { WEBSOCKET_API_HOST } from '../config';
@@ -40,7 +40,7 @@ const App = () => {
   const [isPositionOnPage, setPositionOnPage] = useState(false);
   const [positionLossProfitPerc, setPositionLossProfitPerc] = useState(null);
 
-  useEffect(function handleWebsocetConnection() {
+  useEffect(() => {
     const performWebSocketMsg = (msg) => {
       if (msg.event === 'auth' && msg.status === 'FAILED') {
         console.error('WEBSOCKET FAILED', msg);
@@ -74,10 +74,10 @@ const App = () => {
     return () => wss.close();
   }, []);
 
-  useEffect(function checkIfPositionsTableExists() {
+  useEffect(() => {
     const pageContent = document.getElementById('app-page-content');
 
-    const observer = new MutationObserver((mutations, currObserver) => {
+    const observer = new MutationObserver(() => {
       const positionsTable = document.querySelector('[data-qa-id="positions-table"]');
 
       if (!isPositionOnPage && positionsTable) {
@@ -95,46 +95,40 @@ const App = () => {
     });
   }, []);
 
-  useEffect(
-    function updateBadge() {
-      if (!isPositionOnPage && position) {
-        chrome.runtime.sendMessage({ badgeValue: position.lossProfitPerc });
-      } else if (positionLossProfitPerc) {
-        chrome.runtime.sendMessage({ badgeValue: positionLossProfitPerc });
+  useEffect(() => {
+    if (!isPositionOnPage && position) {
+      chrome.runtime.sendMessage({ badgeValue: position.lossProfitPerc });
+    } else if (positionLossProfitPerc) {
+      chrome.runtime.sendMessage({ badgeValue: positionLossProfitPerc });
+    }
+  }, [position, positionLossProfitPerc, isPositionOnPage]);
+
+  useEffect(() => {
+    if (!isPositionOnPage) return;
+
+    const lossProfitPerc = document.querySelector(
+      '[data-qa-id="positions-table"] span:nth-child(8)'
+    );
+
+    const observer = new MutationObserver(() => {
+      if (lossProfitPerc) {
+        setPositionLossProfitPerc(Number(lossProfitPerc.textContent));
       }
-    },
-    [position, positionLossProfitPerc, isPositionOnPage]
-  );
+    });
 
-  useEffect(
-    function getPositionStatusFromPage() {
-      if (!isPositionOnPage) return;
+    observer.observe(lossProfitPerc, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
 
-      const lossProfitPerc = document.querySelector(
-        '[data-qa-id="positions-table"] span:nth-child(8)'
-      );
-      console.log('getPositionStatusFromPage', lossProfitPerc);
-      const observer = new MutationObserver((mutations, currObserver) => {
-        if (lossProfitPerc) {
-          setPositionLossProfitPerc(Number(lossProfitPerc.textContent));
-        }
-      });
-
-      observer.observe(lossProfitPerc, {
-        childList: true,
-        subtree: true,
-        characterData: true,
-      });
-
-      return () => observer && observer.disconnect();
-    },
-    [isPositionOnPage]
-  );
+    return () => observer && observer.disconnect();
+  }, [isPositionOnPage]);
 
   useEffect(async () => {
-    const ledgers = await getLedgersHistory(1000);
+    const ledgersHistory = await getLedgersHistory(1000);
 
-    setLedgers(ledgers);
+    setLedgers(ledgersHistory);
   }, [refreshCount]);
 
   useEffect(() => {
@@ -157,6 +151,7 @@ const App = () => {
               timestamp,
             };
           }
+          return undefined;
         })
         .filter((balance) => balance !== undefined);
     };

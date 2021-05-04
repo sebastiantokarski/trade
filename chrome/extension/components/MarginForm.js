@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import { fetchData, getSymbolFromUrl } from '../utils';
 import { getMarginInfo, retrievePositions } from '../api';
 import RiskOption from './RiskOption';
 import { riskOptions } from '../config';
-import styled from 'styled-components';
 
 const MainWrapper = styled.div`
   position: relative;

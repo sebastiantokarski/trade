@@ -1,11 +1,19 @@
 import CryptoJS from 'crypto-js';
 import {
+  DEBUG_MODE,
   API_KEY,
   API_SECRET_KEY,
   API_ORIGIN,
   WEBSOCKET_API_KEY,
   WEBSOCKET_API_SECRET_KEY,
 } from './config';
+
+export const log = (type, ...args) => {
+  if (DEBUG_MODE && ['log', 'debug', 'info', 'warn', 'error'].contains(type)) {
+    // eslint-disable-next-line no-console
+    console[type](...args);
+  }
+};
 
 export const timeSince = (timestamp) => {
   const msPerMinute = 60 * 1000;
@@ -31,9 +39,7 @@ export const timeSince = (timestamp) => {
   return `${Math.round(elapsed / msPerYear)} years ago`;
 };
 
-export const getSymbolFromUrl = () => {
-  return window.location.pathname.replace(/\/|:/g, '');
-};
+export const getSymbolFromUrl = () => window.location.pathname.replace(/\/|:/g, '');
 
 export const getTodayMidnightTime = () => {
   const todayMidnight = new Date();
@@ -45,7 +51,8 @@ export const getTodayMidnightTime = () => {
 
 export const getWebsocketAuthData = () => {
   const authNonce = Date.now() * 1000;
-  const authPayload = 'AUTH' + authNonce;
+  const authPayload = `AUTH${authNonce}`;
+  // eslint-disable-next-line new-cap
   const authSig = CryptoJS.HmacSHA384(authPayload, WEBSOCKET_API_SECRET_KEY).toString(
     CryptoJS.enc.Hex
   );
@@ -64,6 +71,7 @@ export const getWebsocketAuthData = () => {
 export const getAuthHeaders = (apiPath, body) => {
   const nonce = (Date.now() * 1000).toString();
   const signature = `/api/${apiPath}${nonce}${JSON.stringify(body)}`;
+  // eslint-disable-next-line new-cap
   const sig = CryptoJS.HmacSHA384(signature, API_SECRET_KEY).toString();
 
   return {
@@ -81,9 +89,7 @@ export const fetchData = async (apiPath, body = {}) => {
     headers: getAuthHeaders(apiPath, body),
   })
     .then((res) => res.json())
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch((ex) => log('error', 'FAILED TO FETCH DATA', ex));
 
   return response;
 };
@@ -91,27 +97,19 @@ export const fetchData = async (apiPath, body = {}) => {
 export const getData = async (pathParams) => {
   const response = await fetch(`${API_ORIGIN}/${pathParams}`)
     .then((res) => res.json())
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch((ex) => log('error', 'FAILED TO GET DATA', ex));
 
   return response;
 };
 
-const getCurrTickerInfo = async () => {
-  const tickerResponse = await getData(`v2/ticker/${getSymbolFromUrl()}`);
+// const getCurrMarginWalletInfo = async () => {
+//   const walletResponse = await fetchData('v2/auth/r/wallets');
+//   const marginWalletInfo = walletResponse.find(
+//     (wallet) => wallet[0] === 'margin' && wallet[1] === 'USD'
+//   );
 
-  return { bid: tickerResponse[0], ask: tickerResponse[2] };
-};
-
-const getCurrMarginWalletInfo = async () => {
-  const walletResponse = await fetchData('v2/auth/r/wallets');
-  const marginWalletInfo = walletResponse.find(
-    (wallet) => wallet[0] === 'margin' && wallet[1] === 'USD'
-  );
-
-  return {
-    total: marginWalletInfo ? marginWalletInfo[2] : 0,
-    available: marginWalletInfo ? marginWalletInfo[4] : 0,
-  };
-};
+//   return {
+//     total: marginWalletInfo ? marginWalletInfo[2] : 0,
+//     available: marginWalletInfo ? marginWalletInfo[4] : 0,
+//   };
+// };
