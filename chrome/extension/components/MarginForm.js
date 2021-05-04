@@ -3,11 +3,11 @@ import styled from 'styled-components';
 import { fetchData, getSymbolFromUrl } from '../utils';
 import { getMarginInfo, retrievePositions } from '../api';
 import RiskOption from './RiskOption';
-import { riskOptions } from '../config';
+import { RISK_OPTIONS } from '../config';
 
 const MainWrapper = styled.div`
   position: relative;
-  max-width: 370px;
+  max-width: 400px;
   padding: 20px;
   border: 1px solid rgba(100, 100, 100, 0.3);
 `;
@@ -44,12 +44,14 @@ const MarginForm = ({ currBalance }) => {
   const [risk, setRisk] = useState();
 
   const manageRisk = (type, price) => {
-    const riskValue = riskOptions[risk];
+    const riskValue = RISK_OPTIONS[risk].value;
+    const feeInPerc = 0.02;
+    const leverage = 5;
 
     if (type === 'buy') {
-      return price * (1 - riskValue);
+      return price * (1 - (riskValue - feeInPerc) / leverage);
     } else if (type === 'sell') {
-      return price * (1 + riskValue);
+      return price * (1 + (riskValue - feeInPerc) / leverage);
     }
   };
 
@@ -104,24 +106,19 @@ const MarginForm = ({ currBalance }) => {
       <Title>Order form</Title>
       <Description>Select how much you can lose:</Description>
       <div>
-        <RiskOption
-          value="maximum"
-          label="Maximum risk"
-          onChange={handleRiskChange}
-          currBalance={currBalance}
-        />
-        <RiskOption
-          value="standard"
-          label="Standard risk"
-          onChange={handleRiskChange}
-          currBalance={currBalance}
-        />
-        <RiskOption
-          value="minimal"
-          label="Minimal risk"
-          onChange={handleRiskChange}
-          currBalance={currBalance}
-        />
+        {Object.keys(RISK_OPTIONS).map((key, index) => {
+          const { name, label } = RISK_OPTIONS[key];
+
+          return (
+            <RiskOption
+              key={index}
+              value={name}
+              label={label}
+              onChange={handleRiskChange}
+              currBalance={currBalance}
+            />
+          );
+        })}
       </div>
       <div className="orderform__actions">
         <MarginActionBtn

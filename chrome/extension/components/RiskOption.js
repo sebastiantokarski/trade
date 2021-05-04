@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { riskOptions } from '../config';
+import { RISK_OPTIONS } from '../config';
 import { RadioButton } from './UI';
 
 const RiskOptionWrapper = styled.div`
@@ -15,17 +15,17 @@ const RiskValues = styled.span`
 `;
 
 const RiskOption = ({ value, label, onChange, currBalance }) => {
-  const feeInPerc = 0.02;
-  const leverage = 5;
-  const lossInPerc = (riskOptions[value] * leverage + feeInPerc) * 100;
-  const lossInValue = currBalance ? currBalance - currBalance * (lossInPerc / 100) : null;
+  const potentialLossInPerc = RISK_OPTIONS[value].value * 100;
+  const potentialLossInValue = currBalance
+    ? currBalance - currBalance * (potentialLossInPerc / 100)
+    : 0;
 
   return (
     <RiskOptionWrapper>
       <RadioButton name="risk" value={value} label={label} onChange={onChange} />
       <div>
-        <RiskValues className="bfx-red-text">- {lossInPerc.toFixed(2)}%</RiskValues>
-        <RiskValues className="bfx-red-text">{currBalance && lossInValue.toFixed(2)}$</RiskValues>
+        <RiskValues className="bfx-red-text">- {potentialLossInPerc}%</RiskValues>
+        <RiskValues className="bfx-red-text">{potentialLossInValue.toFixed(2)}$</RiskValues>
       </div>
     </RiskOptionWrapper>
   );

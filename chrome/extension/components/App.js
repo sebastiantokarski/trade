@@ -3,12 +3,12 @@ import styled from 'styled-components';
 import SimpleBar from 'simplebar-react';
 import { BalanceChart, BalanceSlider, PositionStatus, MarginForm } from '../components';
 import { getLedgersHistory } from '../api';
-import { timeSince, getTodayMidnightTime, getWebsocketAuthData } from '../utils';
-import { WEBSOCKET_API_HOST } from '../config';
+import { timeSince, getTodayMidnightTime, getWebsocketAuthData, log } from '../utils';
+import { WEBSOCKET_API_HOST, MAXIMUM_LOSS, TARGET_PROFIT } from '../config';
 
 const ContentWrapper = styled.div`
   display: flex;
-  height: 260px;
+  height: 280px;
   padding: 10px;
 `;
 const ContentContainer = styled.div`
@@ -33,19 +33,56 @@ const RefreshIcon = styled.i`
 const App = () => {
   const [ledgers, setLedgers] = useState([]);
   const [position, setPosition] = useState();
-  const [currBalance, setCurrBalance] = useState();
-  const [currDayBalance, setCurrDayBalance] = useState();
+  const [balance, setBalance] = useState(0);
+  const [currBalance, setCurrBalance] = useState(0);
+  const [currDayBalance, setCurrDayBalance] = useState(0);
   const [lastbalanceChanges, setLastBalanceChanges] = useState([]);
   const [refreshCount, setRefreshCount] = useState(0);
   const [isPositionOnPage, setPositionOnPage] = useState(false);
   const [positionLossProfitPerc, setPositionLossProfitPerc] = useState(null);
+  const [warningMode, setWarningMode] = useState(false);
+
+  const minimalBalance = currDayBalance - currDayBalance * MAXIMUM_LOSS;
+  const targetBalance = currDayBalance + currDayBalance * TARGET_PROFIT;
+
+  useEffect(() => {
+    if (!warningMode && currBalance < minimalBalance) {
+      setWarningMode(true);
+    } else if (warningMode && currBalance > minimalBalance) {
+      setWarningMode(false);
+    }
+  }, [currBalance]);
+
+  useEffect(() => {
+    if (position) {
+      setCurrBalance(balance + position.lossProfitValue);
+    }
+  }, [position]);
+
+  useEffect(() => {
+    const injectedByExtension = document.querySelector('.ui-panel.injected-by-extension');
+
+    if (warningMode) {
+      injectedByExtension.classList.add('warning-mode');
+    } else {
+      injectedByExtension.classList.remove('warning-mode');
+    }
+  }, [warningMode]);
 
   useEffect(() => {
     const performWebSocketMsg = (msg) => {
       if (msg.event === 'auth' && msg.status === 'FAILED') {
-        console.error('WEBSOCKET FAILED', msg);
+        log('error', 'FAILED CONNECT TO WEBSOCKET', msg);
       } else if (msg[1] === 'wu' && msg[2][0] === 'margin' && msg[2][1] === 'USD') {
-        setCurrBalance(msg[2][2]);
+        setBalance(msg[2][2]);
+      } else if (msg[1] === 'ws') {
+        const walletMarginUSD = msg[2].find(
+          (wallet) => wallet[0] === 'margin' && wallet[1] === 'USD'
+        );
+
+        if (walletMarginUSD) {
+          setBalance(walletMarginUSD[2]);
+        }
       } else if (msg[1] === 'pu') {
         setPosition({
           symbol: msg[2][0],
@@ -64,9 +101,7 @@ const App = () => {
     wss.onmessage = (msg) => {
       const response = JSON.parse(msg.data);
 
-      if (response.event === 'auth' && response.status !== 'FAILED') {
-        wss.send(JSON.stringify({ event: 'subscribe', channel: 'wallet' }));
-      } else if (response) {
+      if (response) {
         performWebSocketMsg(response);
       }
     };
@@ -195,7 +230,7 @@ const App = () => {
               className="fa fa-refresh fa-fw bfx-blue"
               onClick={() => setRefreshCount(refreshCount + 1)}
             />
-            <span className="ui-collapsible__title">Be careful</span>
+            <span className="ui-collapsible__title">Refresh</span>
           </div>
           <div style={{ width: '60%' }}>
             <BalanceSlider
