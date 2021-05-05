@@ -93,8 +93,10 @@ const MarginForm = ({ currBalance }) => {
     setRisk(ev.target.value);
   };
 
-  const handleClosePosition = () => {
+  const handleClosePosition = async () => {
     const closeBtn = document.querySelector('[data-qa-id="positions-table"] button[data-qa-id]');
+
+    await cancelStopOrder();
 
     if (closeBtn) {
       closeBtn.click();

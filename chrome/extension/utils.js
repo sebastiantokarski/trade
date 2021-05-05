@@ -49,6 +49,16 @@ export const getTodayMidnightTime = () => {
   return todayMidnight.getTime();
 };
 
+export const isDateFromToday = (timestamp) => {
+  const today = new Date().setHours(0, 0, 0, 0);
+  const thatDay = new Date(timestamp).setHours(0, 0, 0, 0);
+
+  if (today === thatDay) {
+    return true;
+  }
+  return false;
+};
+
 export const getWebsocketAuthData = () => {
   const authNonce = Date.now() * 1000;
   const authPayload = `AUTH${authNonce}`;

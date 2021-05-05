@@ -54,12 +54,12 @@ export const getLedgersHistory = async (limit) => {
     return ledgersResponse.map((ledger) => ({
       id: ledger[0],
       currency: ledger[1],
-      _PLACEHOLDER: ledger[2],
+      _PLACEHOLDER_1: ledger[2],
       timestamp: ledger[3],
-      _PLACEHOLDER_1: ledger[4],
+      _PLACEHOLDER_2: ledger[4],
       amout: ledger[5],
       balance: ledger[6],
-      _PLACEHOLDER_2: ledger[7],
+      _PLACEHOLDER_3: ledger[7],
       description: ledger[8],
     }));
   } catch (ex) {
