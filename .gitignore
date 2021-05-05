@@ -10,4 +10,4 @@ dev/
 *.pem
 update.xml
 
-chrome/extension/config.js
+chrome/extension/injected/config.js

@@ -64,6 +64,7 @@
     "webpack-httpolyglot-server": "^0.3.0"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^1.5.1",
     "autoprefixer": "^7.2.5",
     "bluebird": "^3.3.4",
     "chart.js": "~2.9.4",
@@ -77,6 +78,7 @@
     "react-dom": "^17.0.0",
     "react-redux": "^4.3.0",
     "redux": "^3.2.1",
+    "redux-logger": "^3.0.6",
     "redux-thunk": "^2.0.1",
     "simplebar-react": "~2.3.0",
     "styled-components": "~5.2.1"

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
-import App from './components/App';
+import Root from './injected/Root';
 
 (() => {
   const root = document.getElementById('root');
@@ -18,7 +18,7 @@ import App from './components/App';
       injectWrapper.className = 'ui-panel bg-wrap injected-by-extension';
       chartWrapper.parentNode.insertBefore(injectWrapper, chartWrapper.nextSibling.nextSibling);
       currObserver.disconnect();
-      render(<App />, injectWrapper);
+      render(<Root />, injectWrapper);
     }
   });
 
