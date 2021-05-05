@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { fetchData, getSymbolFromUrl } from '../utils';
-import { getMarginInfo, retrievePositions } from '../api';
+import { fetchData } from '../utils';
+import { getMarginInfo, retrievePositions, submitMarketOrder, createStopOrder } from '../api';
 import RiskOption from './RiskOption';
 import { RISK_OPTIONS } from '../config';
 
@@ -43,18 +43,6 @@ const MarginActionBtn = styled.button`
 const MarginForm = ({ currBalance }) => {
   const [risk, setRisk] = useState();
 
-  const manageRisk = (type, price) => {
-    const riskValue = RISK_OPTIONS[risk].value;
-    const feeInPerc = 0.02;
-    const leverage = 5;
-
-    if (type === 'buy') {
-      return price * (1 - (riskValue - feeInPerc) / leverage);
-    } else if (type === 'sell') {
-      return price * (1 + (riskValue - feeInPerc) / leverage);
-    }
-  };
-
   const cancelStopOrder = async () => {
     const ordersResponse = await fetchData('v2/auth/r/orders');
     const stopOrderToCancel = ordersResponse.find((order) => order[8] === 'STOP');
@@ -68,25 +56,17 @@ const MarginForm = ({ currBalance }) => {
     await cancelStopOrder();
 
     const marginInfo = await getMarginInfo();
-    const amount = type === 'buy' ? marginInfo.buy : marginInfo.sell * -1;
+    const marketAmount = type === 'buy' ? marginInfo.buy : marginInfo.sell * -1;
 
-    await fetchData('v2/auth/w/order/submit', {
-      type: 'MARKET',
-      symbol: getSymbolFromUrl(),
-      amount: amount.toFixed(2),
-    });
+    await submitMarketOrder(marketAmount);
 
     const positions = await retrievePositions();
-    const position = positions[0];
 
-    await fetchData('v2/auth/w/order/submit', {
-      type: 'STOP',
-      symbol: getSymbolFromUrl(),
-      amount: (position.amount * -1).toString(),
-      price: manageRisk(type, position.price).toFixed(4),
-    });
+    if (positions[0]) {
+      const { amount, price } = positions[0];
 
-    setRisk();
+      await createStopOrder(type, amount, price, risk);
+    }
   };
 
   const handleRiskChange = (ev) => {

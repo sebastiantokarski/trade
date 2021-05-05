@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { BalanceChart, BalanceSlider, PositionStatus, MarginForm, LastChanges } from './components';
+import {
+  BalanceChart,
+  BalanceSlider,
+  PositionStatus,
+  MarginForm,
+  LastChanges,
+  Statistics,
+} from './components';
 import { getLedgersHistory } from './api';
 import { getTodayMidnightTime, getWebsocketAuthData, log } from './utils';
 import { WEBSOCKET_API_HOST, MAXIMUM_LOSS, TARGET_PROFIT } from './config';
@@ -206,14 +213,17 @@ const App = () => {
         </div>
       </div>
       <ContentWrapper>
-        <ContentContainer style={{ width: '35%' }}>
+        <ContentContainer style={{ width: '30%' }}>
           <MarginForm currBalance={currBalance} />
         </ContentContainer>
-        <ContentContainer style={{ width: '40%' }}>
+        <ContentContainer style={{ width: '30%' }}>
           <BalanceChart ledgers={ledgers} />
         </ContentContainer>
-        <ContentContainer style={{ width: '35%' }}>
+        <ContentContainer style={{ width: '30%' }}>
           <LastChanges ledgers={ledgers} currDayBalance={currDayBalance} />
+        </ContentContainer>
+        <ContentContainer style={{ width: '10%' }}>
+          <Statistics />
         </ContentContainer>
       </ContentWrapper>
     </div>

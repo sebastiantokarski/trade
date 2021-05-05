@@ -6,6 +6,7 @@ import {
   API_ORIGIN,
   WEBSOCKET_API_KEY,
   WEBSOCKET_API_SECRET_KEY,
+  RISK_OPTIONS,
 } from './config';
 
 export const log = (type, ...args) => {
@@ -110,6 +111,19 @@ export const getData = async (pathParams) => {
     .catch((ex) => log('error', 'FAILED TO GET DATA', ex));
 
   return response;
+};
+
+export const manageRisk = (type, price, risk) => {
+  const riskValue = RISK_OPTIONS[risk].value;
+  const feeInPerc = 0.02;
+  // @TODO
+  const leverage = 5;
+
+  if (type === 'buy') {
+    return price * (1 - (riskValue - feeInPerc) / leverage);
+  } else if (type === 'sell') {
+    return price * (1 + (riskValue - feeInPerc) / leverage);
+  }
 };
 
 // const getCurrMarginWalletInfo = async () => {

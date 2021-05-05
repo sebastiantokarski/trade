@@ -1,4 +1,4 @@
-import { fetchData, getData, getSymbolFromUrl, log } from './utils';
+import { fetchData, getData, getSymbolFromUrl, log, manageRisk } from './utils';
 
 export const getMarginInfo = async () => {
   try {
@@ -85,5 +85,30 @@ export const getCurrTickerInfo = async () => {
     };
   } catch (ex) {
     log('error', 'FAILED TO FETCH CURRENT TICKER INFO', ex);
+  }
+};
+
+export const submitMarketOrder = async (amount) => {
+  try {
+    await fetchData('v2/auth/w/order/submit', {
+      type: 'MARKET',
+      symbol: getSymbolFromUrl(),
+      amount: amount.toFixed(3),
+    });
+  } catch (ex) {
+    log('error', 'FAILED TO SUBMIT MARKET ORDER', ex);
+  }
+};
+
+export const createStopOrder = async (type, amount, price, risk) => {
+  try {
+    await fetchData('v2/auth/w/order/submit', {
+      type: 'STOP',
+      symbol: getSymbolFromUrl(),
+      amount: (amount * -1).toString(),
+      price: manageRisk(type, price, risk).toFixed(4),
+    });
+  } catch (ex) {
+    log('error', 'FAILED TO CREATE STOP ORDER', ex);
   }
 };
