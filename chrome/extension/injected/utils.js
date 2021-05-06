@@ -7,10 +7,10 @@ import {
   WEBSOCKET_API_KEY,
   WEBSOCKET_API_SECRET_KEY,
   RISK_OPTIONS,
-} from './config';
+} from '../config';
 
 export const log = (type, ...args) => {
-  if (DEBUG_MODE && ['log', 'debug', 'info', 'warn', 'error'].contains(type)) {
+  if (DEBUG_MODE && ['log', 'debug', 'info', 'warn', 'error'].includes(type)) {
     // eslint-disable-next-line no-console
     console[type](...args);
   }
@@ -40,7 +40,9 @@ export const timeSince = (timestamp) => {
   return `${Math.round(elapsed / msPerYear)} years ago`;
 };
 
-export const getSymbolFromUrl = () => window.location.pathname.replace(/\/|:/g, '');
+export const getSymbolFromUrl = () => {
+  return window.location.pathname.replace(/\/|:/g, '').replace('DOGEUSD', 'DOGE:USD');
+};
 
 export const getTodayMidnightTime = () => {
   const todayMidnight = new Date();

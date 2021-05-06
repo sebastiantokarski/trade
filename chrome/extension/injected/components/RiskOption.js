@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { RISK_OPTIONS } from '../config';
+import { RISK_OPTIONS } from '../../config';
 import { RadioButton } from './UI';
 
 const RiskOptionWrapper = styled.div`

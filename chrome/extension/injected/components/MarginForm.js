@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { fetchData } from '../utils';
 import { getMarginInfo, retrievePositions, submitMarketOrder, createStopOrder } from '../api';
 import RiskOption from './RiskOption';
-import { RISK_OPTIONS } from '../config';
+import { RISK_OPTIONS } from '../../config';
 
 const MainWrapper = styled.div`
   position: relative;

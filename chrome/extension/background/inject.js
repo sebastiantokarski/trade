@@ -1,4 +1,4 @@
-import { TRADE_ORIGIN } from '../config';
+import { TRADE_HOST } from '../config';
 
 function isInjected(tabId) {
   return chrome.tabs.executeScriptAsync(tabId, {
@@ -38,7 +38,7 @@ function loadScript(name, tabId, cb) {
   }
 }
 
-const arrowURLs = [`^https://${TRADE_ORIGIN}`];
+const arrowURLs = [`^https://${TRADE_HOST}`];
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status !== 'loading' || !tab.url.match(arrowURLs.join('|'))) return;

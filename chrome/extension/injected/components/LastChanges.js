@@ -40,6 +40,7 @@ const LastChanges = ({ ledgers, currDayBalance }) => {
       lastPositionLedgers.push({
         balance: currDayBalance,
         timestamp: new Date().setHours(0, 0, 0, 0),
+        change: 0,
       });
 
       return lastPositionLedgers
@@ -63,7 +64,13 @@ const LastChanges = ({ ledgers, currDayBalance }) => {
     setLastBalanceChanges(getLastLedgersChanges());
   }, [ledgers, currDayBalance]);
 
-  const sumLastLossProfit = lastbalanceChanges.reduce((a, b) => a + b.change, 0).toFixed(2);
+  let sumLastLossProfit = 0;
+  if (lastbalanceChanges.length) {
+    sumLastLossProfit =
+      ((lastbalanceChanges[0].value - lastbalanceChanges[lastbalanceChanges.length - 1].value) /
+        lastbalanceChanges[lastbalanceChanges.length - 1].value) *
+      100;
+  }
 
   return (
     <MainWrapper>
@@ -73,7 +80,7 @@ const LastChanges = ({ ledgers, currDayBalance }) => {
           className={sumLastLossProfit > 0 ? 'bfx-green-text' : 'bfx-red-text'}
           style={{ marginLeft: '5px' }}
         >
-          {sumLastLossProfit > 0 ? '▲' : '▼'} {sumLastLossProfit}%
+          {sumLastLossProfit > 0 ? '▲' : '▼'} {sumLastLossProfit.toFixed(2)}%
         </span>
       </Title>
       <SimpleBar style={{ maxHeight: '205px' }}>

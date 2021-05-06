@@ -1,5 +1,5 @@
 import {
-  TRADE_ORIGIN,
+  TRADE_HOST,
   DEFAULT_ICON_PATH,
   PROFIT_ICON_PATH,
   LOSS_ICON_PATH,
@@ -41,7 +41,7 @@ chrome.extension.onMessage.addListener((request) => {
 
 chrome.tabs.onRemoved.addListener(() => {
   chrome.tabs.query({}, (tabs) => {
-    const tradeTab = tabs.find((tab) => tab.url.match(TRADE_ORIGIN));
+    const tradeTab = tabs.find((tab) => tab.url.match(TRADE_HOST));
 
     if (!tradeTab) {
       setDefaultBadge();

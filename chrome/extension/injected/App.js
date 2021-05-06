@@ -10,7 +10,7 @@ import {
 } from './components';
 import { getLedgersHistory } from './api';
 import { getTodayMidnightTime, getWebsocketAuthData, log } from './utils';
-import { WEBSOCKET_API_HOST, MAXIMUM_LOSS, TARGET_PROFIT } from './config';
+import { WEBSOCKET_API_HOST, MAXIMUM_LOSS, TARGET_PROFIT } from '../config';
 
 const ContentWrapper = styled.div`
   display: flex;
