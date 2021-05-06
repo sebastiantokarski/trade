@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
   BalanceChart,
@@ -8,9 +9,9 @@ import {
   LastChanges,
   Statistics,
 } from './components';
-import { getLedgersHistory } from './api';
-import { getTodayMidnightTime, getWebsocketAuthData, log } from './utils';
-import { WEBSOCKET_API_HOST, MAXIMUM_LOSS, TARGET_PROFIT } from '../config';
+import { getWebsocketAuthData, log } from './utils';
+import { WEBSOCKET_API_HOST } from '../config';
+import { fetchLedgers } from './redux/slices/accountSlice';
 
 const ContentWrapper = styled.div`
   display: flex;
@@ -26,32 +27,48 @@ const RefreshIcon = styled.i`
 `;
 
 const App = () => {
-  const [ledgers, setLedgers] = useState([]);
+  const dispatch = useDispatch();
+
   const [position, setPosition] = useState();
-  const [balance, setBalance] = useState(0);
-  const [currBalance, setCurrBalance] = useState(0);
-  const [currDayBalance, setCurrDayBalance] = useState(0);
+  const [currActiveBalance, setCurrActiveBalance] = useState(0);
   const [refreshCount, setRefreshCount] = useState(0);
   const [isPositionOnPage, setPositionOnPage] = useState(false);
-  const [positionLossProfitPerc, setPositionLossProfitPerc] = useState(null);
+  const [plValue, setPlValue] = useState(null);
+  const [plPerc, setPlPerc] = useState(null);
   const [warningMode, setWarningMode] = useState(false);
 
-  const minimalBalance = currDayBalance - currDayBalance * MAXIMUM_LOSS;
-  const targetBalance = currDayBalance + currDayBalance * TARGET_PROFIT;
+  const {
+    ledgers,
+    minBalance,
+    targetBalance,
+    performDataSucces,
+    currBalance,
+    currDayBalance,
+  } = useSelector((state) => state.account);
 
   useEffect(() => {
-    if (!warningMode && currBalance < minimalBalance) {
+    dispatch(fetchLedgers());
+  }, [dispatch, refreshCount]);
+
+  useEffect(() => {
+    if (!warningMode && currBalance < minBalance) {
       setWarningMode(true);
-    } else if (warningMode && currBalance > minimalBalance) {
+    } else if (warningMode && currBalance > minBalance) {
       setWarningMode(false);
     }
   }, [currBalance]);
 
   useEffect(() => {
     if (position) {
-      setCurrBalance(balance + position.lossProfitValue);
+      setCurrActiveBalance(currBalance + position.lossProfitValue);
     }
   }, [position]);
+
+  useEffect(() => {
+    if (plValue) {
+      setCurrActiveBalance(currBalance + plValue);
+    }
+  }, [plValue]);
 
   useEffect(() => {
     const injectedByExtension = document.querySelector('.ui-panel.injected-by-extension');
@@ -68,14 +85,14 @@ const App = () => {
       if (msg.event === 'auth' && msg.status === 'FAILED') {
         log('error', 'FAILED CONNECT TO WEBSOCKET', msg);
       } else if (msg[1] === 'wu' && msg[2][0] === 'margin' && msg[2][1] === 'USD') {
-        setBalance(msg[2][2]);
+        setCurrActiveBalance(msg[2][2]);
       } else if (msg[1] === 'ws') {
         const walletMarginUSD = msg[2].find(
           (wallet) => wallet[0] === 'margin' && wallet[1] === 'USD'
         );
 
         if (walletMarginUSD) {
-          setBalance(walletMarginUSD[2]);
+          //setCurActiveBalance(walletMarginUSD[2]);
         }
       } else if (msg[1] === 'pu') {
         setPosition({
@@ -127,25 +144,30 @@ const App = () => {
   useEffect(() => {
     if (!isPositionOnPage && position) {
       chrome.runtime.sendMessage({ badgeValue: position.lossProfitPerc });
-    } else if (positionLossProfitPerc) {
-      chrome.runtime.sendMessage({ badgeValue: positionLossProfitPerc });
+    } else if (plPerc) {
+      chrome.runtime.sendMessage({ badgeValue: plPerc });
     }
-  }, [position, positionLossProfitPerc, isPositionOnPage]);
+  }, [position, plPerc, isPositionOnPage]);
 
   useEffect(() => {
     if (!isPositionOnPage) return;
 
-    const lossProfitPerc = document.querySelector(
-      '[data-qa-id="positions-table"] span:nth-child(8)'
-    );
+    const plPercEl = document.querySelector('[data-qa-id="positions-table"] span:nth-child(8)');
 
     const observer = new MutationObserver(() => {
-      if (lossProfitPerc) {
-        setPositionLossProfitPerc(Number(lossProfitPerc.textContent));
+      const plValueEl = document.querySelector(
+        '[data-qa-id="positions-table"] span:nth-child(7) span'
+      );
+
+      if (plPercEl) {
+        setPlPerc(Number(plPercEl.textContent));
+      }
+      if (setPlValue) {
+        setPlValue(Number(plValueEl.textContent));
       }
     });
 
-    observer.observe(lossProfitPerc, {
+    observer.observe(plPercEl, {
       childList: true,
       subtree: true,
       characterData: true,
@@ -153,29 +175,6 @@ const App = () => {
 
     return () => observer && observer.disconnect();
   }, [isPositionOnPage]);
-
-  useEffect(async () => {
-    const ledgersHistory = await getLedgersHistory(1000);
-
-    setLedgers(ledgersHistory);
-  }, [refreshCount]);
-
-  useEffect(() => {
-    if (ledgers.length) {
-      const todayMidnight = getTodayMidnightTime();
-      const lastLedgerBalance = ledgers.find((ledger) => ledger.balance > 1);
-      const currDayledger = ledgers
-        .filter((ledger) => ledger.description && ledger.description.match('Position closed'))
-        .find((ledger) => ledger.timestamp < todayMidnight);
-
-      if (currDayledger) {
-        setCurrDayBalance(currDayledger.balance);
-      }
-      if (lastLedgerBalance) {
-        setCurrBalance(lastLedgerBalance.balance);
-      }
-    }
-  }, [ledgers]);
 
   return (
     <div style={{ overflow: 'visible' }}>
@@ -195,19 +194,20 @@ const App = () => {
             <span className="ui-collapsible__title">Refresh</span>
           </div>
           <div style={{ width: '60%' }}>
-            <BalanceSlider
-              data={{
-                currBalance,
-                currDayBalance,
-                currBalanceModifier: position && position.lossProfitValue,
-              }}
-            />
+            {performDataSucces && (
+              <BalanceSlider
+                minBalance={minBalance}
+                currDayBalance={currDayBalance}
+                currActiveBalance={currActiveBalance}
+                targetBalance={targetBalance}
+              />
+            )}
           </div>
           <div style={{ width: '30%' }}>
             <PositionStatus
               position={position}
               isPositionOnPage={isPositionOnPage}
-              positionLossProfitPerc={positionLossProfitPerc}
+              positionLossProfitPerc={plPerc}
             />
           </div>
         </div>

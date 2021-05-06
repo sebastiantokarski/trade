@@ -127,15 +127,3 @@ export const manageRisk = (type, price, risk) => {
     return price * (1 + (riskValue - feeInPerc) / leverage);
   }
 };
-
-// const getCurrMarginWalletInfo = async () => {
-//   const walletResponse = await fetchData('v2/auth/r/wallets');
-//   const marginWalletInfo = walletResponse.find(
-//     (wallet) => wallet[0] === 'margin' && wallet[1] === 'USD'
-//   );
-
-//   return {
-//     total: marginWalletInfo ? marginWalletInfo[2] : 0,
-//     available: marginWalletInfo ? marginWalletInfo[4] : 0,
-//   };
-// };

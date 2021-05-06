@@ -24,3 +24,11 @@ const balance = createSlice({
 export const { setBalance } = balance.actions;
 
 export default balance.reducer;
+
+export const fetchBalanceInfo = () => async (dispatch) => {
+  const positions = await retrievePositions();
+
+  if (positions.length) {
+    dispatch(setPosition(position[0]));
+  }
+};

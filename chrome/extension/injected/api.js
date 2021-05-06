@@ -112,3 +112,18 @@ export const createStopOrder = async (type, amount, price, risk) => {
     log('error', 'FAILED TO CREATE STOP ORDER', ex);
   }
 };
+
+export const getCurrMarginWalletInfo = async () => {
+  const walletResponse = await fetchData('v2/auth/r/wallets');
+  const marginWalletInfo = walletResponse.find(
+    (wallet) => wallet[0] === 'margin' && wallet[1] === 'USD'
+  );
+
+  return {
+    balance: marginWalletInfo[2],
+    unsettled_interest: marginWalletInfo[3],
+    available_balance: marginWalletInfo[4],
+    last_change: marginWalletInfo[5],
+    trade_details: marginWalletInfo[6],
+  };
+};

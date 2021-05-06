@@ -2,27 +2,21 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Nouislider from 'nouislider-react';
 
-const BalanceSlider = ({ data }) => {
-  const { currBalance = 0, currDayBalance, currBalanceModifier = 0 } = data;
-
+const BalanceSlider = ({ minBalance, currDayBalance, currActiveBalance, targetBalance }) => {
   if (!currDayBalance) {
     return null;
   }
 
-  const minimalBalance = currDayBalance - currDayBalance * 0.12;
-  const targetBalance = currDayBalance + currDayBalance * 0.2;
-  const modCurrBalance = currBalance + currBalanceModifier - currBalance * 0.018;
-
   const sliderPoints = [
-    { name: 'minimalBalance', value: minimalBalance, label: 'Min' },
+    { name: 'minimalBalance', value: minBalance, label: 'Min' },
     { name: 'currDayBalance', value: currDayBalance, label: 'Initial' },
     { name: 'targetBalance', value: targetBalance, label: 'Target' },
-    { name: 'currBalance', value: modCurrBalance, label: 'Curr' },
+    { name: 'currBalance', value: currActiveBalance, label: 'Curr' },
   ].sort((a, b) => a.value - b.value);
 
   const sliderRange = {
-    min: minimalBalance - minimalBalance * 0.2,
-    max: targetBalance + targetBalance * 0.2,
+    min: minBalance * 0.9,
+    max: targetBalance * 1.3,
   };
 
   const sliderTooltips = sliderPoints.map(() => true);
@@ -35,7 +29,7 @@ const BalanceSlider = ({ data }) => {
     if (currTooltip) {
       currTooltip.parentNode.style.cssText = 'bottom: 120% !important';
     }
-  }, [currBalanceModifier]);
+  }, [currActiveBalance]);
 
   const sliderFormat = {
     from: Number,
@@ -75,11 +69,10 @@ const BalanceSlider = ({ data }) => {
 };
 
 BalanceSlider.propTypes = {
-  data: PropTypes.shape({
-    currBalance: PropTypes.number,
-    currDayBalance: PropTypes.number,
-    currBalanceModifier: PropTypes.number,
-  }),
+  minBalance: PropTypes.number,
+  currDayBalance: PropTypes.number,
+  currActiveBalance: PropTypes.number,
+  targetBalance: PropTypes.number,
 };
 
 export default BalanceSlider;
