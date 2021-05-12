@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 import { fetchData } from '../utils';
 import { getMarginInfo, retrievePositions, submitMarketOrder, createStopOrder } from '../api';
 import RiskOption from './RiskOption';
@@ -40,8 +41,10 @@ const MarginActionBtn = styled.button`
   }
 `;
 
-const MarginForm = ({ currBalance }) => {
+const MarginForm = ({ blockMarginActions }) => {
   const [risk, setRisk] = useState();
+
+  const { currBalance } = useSelector((state) => state.account);
 
   const cancelStopOrder = async () => {
     const ordersResponse = await fetchData('v2/auth/r/orders');
@@ -107,7 +110,7 @@ const MarginForm = ({ currBalance }) => {
           type="button"
           className="ui-button ui-button--green-o"
           onClick={() => handleMarginAction('buy')}
-          disabled={!risk}
+          disabled={!risk || blockMarginActions}
         >
           Margin Buy
         </MarginActionBtn>
@@ -115,7 +118,7 @@ const MarginForm = ({ currBalance }) => {
           type="button"
           className="ui-button ui-button--red-o"
           onClick={() => handleMarginAction('sell')}
-          disabled={!risk}
+          disabled={!risk || blockMarginActions}
         >
           Margin Sell
         </MarginActionBtn>

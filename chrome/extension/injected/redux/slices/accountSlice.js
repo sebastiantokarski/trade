@@ -10,7 +10,7 @@ const initialState = {
   currDayBalance: undefined,
   minBalance: undefined,
   targetBalance: undefined,
-  performDataSucces: false,
+  performDataSuccess: false,
 };
 
 const account = createSlice({
@@ -42,7 +42,7 @@ const account = createSlice({
         state.targetBalance = state.currDayBalance * (1 + TARGET_PERC_PROFIT);
       }
 
-      state.performDataSucces = true;
+      state.performDataSuccess = true;
     },
   },
 });

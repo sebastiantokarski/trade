@@ -1,11 +1,14 @@
 import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
 import Nouislider from 'nouislider-react';
+import { useSelector } from 'react-redux';
 
-const BalanceSlider = ({ minBalance, currDayBalance, currActiveBalance, targetBalance }) => {
-  if (!currDayBalance) {
-    return null;
-  }
+const BalanceSlider = () => {
+  const { plValue } = useSelector((state) => state.position);
+  const { minBalance, targetBalance, currBalance, currDayBalance } = useSelector(
+    (state) => state.account
+  );
+
+  const currActiveBalance = currBalance + plValue;
 
   const sliderPoints = [
     { name: 'minimalBalance', value: minBalance, label: 'Min' },
@@ -16,7 +19,7 @@ const BalanceSlider = ({ minBalance, currDayBalance, currActiveBalance, targetBa
 
   const sliderRange = {
     min: minBalance * 0.9,
-    max: targetBalance * 1.3,
+    max: targetBalance * 1.4,
   };
 
   const sliderTooltips = sliderPoints.map(() => true);
@@ -66,13 +69,6 @@ const BalanceSlider = ({ minBalance, currDayBalance, currActiveBalance, targetBa
       connect
     />
   );
-};
-
-BalanceSlider.propTypes = {
-  minBalance: PropTypes.number,
-  currDayBalance: PropTypes.number,
-  currActiveBalance: PropTypes.number,
-  targetBalance: PropTypes.number,
 };
 
 export default BalanceSlider;

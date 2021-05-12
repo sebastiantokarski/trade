@@ -5,9 +5,11 @@ import {
   LOSS_ICON_PATH,
   POSITIVE_COLOR,
   NEGATIVE_COLOR,
+  CHECK_BADGE_INTERVAL,
 } from '../config';
 
 let isPositive = false;
+let lastUpdateTimestamp = new Date().getTime();
 
 const setDefaultBadge = () => {
   chrome.browserAction.setIcon({ path: DEFAULT_ICON_PATH });
@@ -16,6 +18,8 @@ const setDefaultBadge = () => {
 
 chrome.extension.onMessage.addListener((request) => {
   const { badgeValue } = request;
+
+  lastUpdateTimestamp = new Date().getTime();
 
   if (badgeValue) {
     chrome.browserAction.setBadgeText({
@@ -48,3 +52,11 @@ chrome.tabs.onRemoved.addListener(() => {
     }
   });
 });
+
+setInterval(() => {
+  const currTimestamp = new Date().getTime();
+
+  if (lastUpdateTimestamp && currTimestamp - lastUpdateTimestamp > CHECK_BADGE_INTERVAL) {
+    setDefaultBadge();
+  }
+}, CHECK_BADGE_INTERVAL);

@@ -1,8 +1,26 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { useTimer } from 'use-timer';
 
 const Statistics = () => {
   const { time, start, pause, reset, status } = useTimer();
+
+  useEffect(() => {
+    window.addEventListener('focus', start);
+    window.addEventListener('blur', pause);
+
+    document.addEventListener('visibilitychange', (ev) => {
+      if (document.hidden) {
+        pause();
+      } else {
+        start();
+      }
+    });
+
+    return () => {
+      window.removeEventListener('focus', start);
+      window.addEventListener('blur', pause);
+    };
+  }, []);
 
   return (
     <Fragment>
@@ -17,7 +35,7 @@ const Statistics = () => {
           Reset
         </button>
       </div>
-      <p>Elapsed time: {time}</p>
+      <p>Time spent today: {time}</p>
       {status === 'RUNNING' && <p>Running...</p>}
     </Fragment>
   );
