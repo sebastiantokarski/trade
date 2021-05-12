@@ -117,7 +117,7 @@ export const getData = async (pathParams) => {
 
 export const manageRisk = (type, price, risk) => {
   const riskValue = RISK_OPTIONS[risk].value;
-  const feeInPerc = 0.02;
+  const feeInPerc = 0.021;
   // @TODO
   const leverage = 5;
 

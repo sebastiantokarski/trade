@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
+import SimpleBar from 'simplebar-react';
 import { fetchData } from '../utils';
 import { getMarginInfo, retrievePositions, submitMarketOrder, createStopOrder } from '../api';
 import RiskOption from './RiskOption';
@@ -41,10 +42,13 @@ const MarginActionBtn = styled.button`
   }
 `;
 
-const MarginForm = ({ blockMarginActions }) => {
+const MarginForm = () => {
   const [risk, setRisk] = useState();
 
-  const { currBalance } = useSelector((state) => state.account);
+  const { currBalance, minBalance } = useSelector((state) => state.account);
+  const { plValue } = useSelector((state) => state.position);
+
+  const blockMarginActions = false; // currBalance < minBalance;
 
   const cancelStopOrder = async () => {
     const ordersResponse = await fetchData('v2/auth/r/orders');
@@ -67,8 +71,9 @@ const MarginForm = ({ blockMarginActions }) => {
 
     if (positions[0]) {
       const { amount, price } = positions[0];
+      const modAmount = plValue > 0 ? amount - plValue * 0.15 : amount;
 
-      await createStopOrder(type, amount, price, risk);
+      await createStopOrder(type, modAmount, price, risk);
     }
   };
 
@@ -90,7 +95,7 @@ const MarginForm = ({ blockMarginActions }) => {
     <MainWrapper>
       <Title>Order form</Title>
       <Description>Select how much you can lose:</Description>
-      <div>
+      <SimpleBar style={{ maxHeight: '105px' }}>
         {Object.keys(RISK_OPTIONS).map((key, index) => {
           const { name, label } = RISK_OPTIONS[key];
 
@@ -104,7 +109,7 @@ const MarginForm = ({ blockMarginActions }) => {
             />
           );
         })}
-      </div>
+      </SimpleBar>
       <div className="orderform__actions">
         <MarginActionBtn
           type="button"

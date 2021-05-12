@@ -64,21 +64,19 @@ const LastChanges = () => {
     .filter((ledger) => (lastChangeType === 'Today' ? isDateFromToday(ledger.timestamp) : true));
 
   if (lastChangeType === 'Last days') {
-    console.log(
-      lastLedgers.reduce(
-        (prev, ledger) => {
-          const { timestamp, balance } = ledger;
-          const currDate = new Date(timestamp).toLocaleDateString();
-          if (prev[currDate] === null || prev[currDate] === undefined) {
-            prev[currDate] = balance;
-          }
-
-          return prev;
-        },
-        {
-          [new Date().toLocaleDateString()]: null,
+    lastLedgers.reduce(
+      (prev, ledger) => {
+        const { timestamp, balance } = ledger;
+        const currDate = new Date(timestamp).toLocaleDateString();
+        if (prev[currDate] === null || prev[currDate] === undefined) {
+          prev[currDate] = balance;
         }
-      )
+
+        return prev;
+      },
+      {
+        [new Date().toLocaleDateString()]: null,
+      }
     );
   }
 

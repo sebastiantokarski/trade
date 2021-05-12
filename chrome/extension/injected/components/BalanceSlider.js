@@ -32,7 +32,7 @@ const BalanceSlider = () => {
     if (currTooltip) {
       currTooltip.parentNode.style.cssText = 'bottom: 120% !important';
     }
-  }, [currActiveBalance]);
+  }, [plValue]);
 
   const sliderFormat = {
     from: Number,

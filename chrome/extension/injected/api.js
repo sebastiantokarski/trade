@@ -1,4 +1,12 @@
-import { fetchData, getData, getSymbolFromUrl, log, manageRisk } from './utils';
+import {
+  fetchData,
+  getData,
+  getSymbolFromUrl,
+  log,
+  manageRisk,
+  getWebsocketAuthData,
+} from './utils';
+import { WEBSOCKET_API_HOST } from '../config';
 
 export const getMarginInfo = async () => {
   try {
@@ -126,4 +134,22 @@ export const getCurrMarginWalletInfo = async () => {
     last_change: marginWalletInfo[5],
     trade_details: marginWalletInfo[6],
   };
+};
+
+export const connectWebsocket = (cb) => {
+  try {
+    const wss = new WebSocket(WEBSOCKET_API_HOST);
+
+    wss.onopen = () => wss.send(JSON.stringify(getWebsocketAuthData()));
+
+    wss.onmessage = (msg) => {
+      const response = JSON.parse(msg.data);
+
+      if (response) {
+        cb(response);
+      }
+    };
+  } catch (ex) {
+    log('error', 'FAILED TO CONNECT WITH WEBSOCKET', ex);
+  }
 };

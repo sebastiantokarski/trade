@@ -24,17 +24,6 @@ const Statistics = () => {
 
   return (
     <Fragment>
-      <div>
-        <button onClick={start} className="ui-button">
-          Start
-        </button>
-        <button onClick={pause} className="ui-button">
-          Pause
-        </button>
-        <button onClick={reset} className="ui-button">
-          Reset
-        </button>
-      </div>
       <p>Time spent today: {time}</p>
       {status === 'RUNNING' && <p>Running...</p>}
     </Fragment>

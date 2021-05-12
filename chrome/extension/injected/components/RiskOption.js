@@ -11,7 +11,7 @@ const RiskOptionWrapper = styled.div`
 const RiskValues = styled.span`
   display: inline-block;
   margin-left: 15px;
-  min-width: 20px;
+  min-width: 55px;
 `;
 
 const RiskOption = ({ value, label, onChange, currBalance }) => {
@@ -19,13 +19,14 @@ const RiskOption = ({ value, label, onChange, currBalance }) => {
   const potentialLossInValue = currBalance
     ? currBalance - currBalance * (potentialLossInPerc / 100)
     : 0;
+  const colorClass = potentialLossInPerc * -1 >= 0 ? 'bfx-green-text' : 'bfx-red-text';
 
   return (
     <RiskOptionWrapper>
       <RadioButton name="risk" value={value} label={label} onChange={onChange} />
       <div>
-        <RiskValues className="bfx-red-text">- {potentialLossInPerc}%</RiskValues>
-        <RiskValues className="bfx-red-text">{potentialLossInValue.toFixed(2)}$</RiskValues>
+        <span className={colorClass}>{potentialLossInPerc * -1}%</span>
+        <RiskValues className={colorClass}>{potentialLossInValue.toFixed(2)}$</RiskValues>
       </div>
     </RiskOptionWrapper>
   );
