@@ -12,7 +12,7 @@ const BalanceChart = () => {
   const getChartData = () => {
     let chartData = [];
 
-    const { ledgers } = useSelector((state) => state.account);
+    const { ledgers, currDayBalance } = useSelector((state) => state.account);
 
     try {
       chartData = ledgers

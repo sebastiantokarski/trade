@@ -153,3 +153,14 @@ export const connectWebsocket = (cb) => {
     log('error', 'FAILED TO CONNECT WITH WEBSOCKET', ex);
   }
 };
+
+export const transferUSDToExchangeWallet = async (amount) => {
+  const transferResponse = await fetchData('v2/auth/w/transfer', {
+    from: 'margin',
+    to: 'exchange',
+    currency: 'USD',
+    amount: amount.toFixed(2),
+  });
+
+  return transferResponse;
+};

@@ -2,8 +2,14 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import SimpleBar from 'simplebar-react';
-import { fetchData } from '../utils';
-import { getMarginInfo, retrievePositions, submitMarketOrder, createStopOrder } from '../api';
+import { fetchData, log } from '../utils';
+import {
+  getMarginInfo,
+  retrievePositions,
+  submitMarketOrder,
+  createStopOrder,
+  transferUSDToExchangeWallet,
+} from '../api';
 import RiskOption from './RiskOption';
 import { RISK_OPTIONS } from '../../config';
 
@@ -34,11 +40,25 @@ const ClosePositionBtn = styled.button`
   width: 100%;
   margin: 0;
   outline: 2px solid #0f8fdafc;
+
+  &:focus {
+    background-color: #284556;
+  }
 `;
 
 const MarginActionBtn = styled.button`
   &[disabled] {
     cursor: not-allowed;
+  }
+
+  &.ui-button--red-o:focus {
+    outline: 2px solid var(--sell-color);
+    background-color: var(--sell-color-transparent);
+  }
+
+  &.ui-button--green-o:focus {
+    outline: 2px solid var(--buy-color);
+    background-color: var(--buy-color-transparent);
   }
 `;
 
@@ -46,7 +66,7 @@ const MarginForm = () => {
   const [risk, setRisk] = useState();
 
   const { currBalance, minBalance } = useSelector((state) => state.account);
-  const { plValue } = useSelector((state) => state.position);
+  const { isActive, plValue } = useSelector((state) => state.position);
 
   const blockMarginActions = false; // currBalance < minBalance;
 
@@ -63,17 +83,25 @@ const MarginForm = () => {
     await cancelStopOrder();
 
     const marginInfo = await getMarginInfo();
+    const plValueMod = type === 'buy' ? plValue * 0.15 : plValue * -0.15;
     const marketAmount = type === 'buy' ? marginInfo.buy : marginInfo.sell * -1;
 
-    await submitMarketOrder(marketAmount);
+    if (plValue > 0) {
+      await transferUSDToExchangeWallet(plValue * 0.15);
+    }
+
+    if (marketAmount !== 0) {
+      const modMarketAmount = isActive && plValue > 0 ? marketAmount - plValueMod : marketAmount;
+
+      await submitMarketOrder(modMarketAmount);
+    }
 
     const positions = await retrievePositions();
 
     if (positions[0]) {
       const { amount, price } = positions[0];
-      const modAmount = plValue > 0 ? amount - plValue * 0.15 : amount;
 
-      await createStopOrder(type, modAmount, price, risk);
+      await createStopOrder(type, amount, price, risk);
     }
   };
 
@@ -82,12 +110,18 @@ const MarginForm = () => {
   };
 
   const handleClosePosition = async () => {
-    const closeBtn = document.querySelector('[data-qa-id="positions-table"] button[data-qa-id]');
-
     await cancelStopOrder();
 
-    if (closeBtn) {
-      closeBtn.click();
+    const positions = await retrievePositions();
+
+    if (positions[0]) {
+      const { amount, pl } = positions[0];
+
+      await submitMarketOrder(amount * -1);
+
+      if (pl > 0) {
+        await transferUSDToExchangeWallet(pl * 0.15);
+      }
     }
   };
 

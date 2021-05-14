@@ -28,7 +28,9 @@ const account = createSlice({
       state.wallet = wallet;
     },
     performData(state, action) {
-      const latestUSDLedger = state.ledgers.find((ledger) => ledger.currency === 'USD');
+      const latestUSDLedger = state.ledgers.find(
+        (ledger) => ledger.currency === 'USD' && !ledger.description.match('Transfer')
+      );
       const yesterdayUSDLedger = state.ledgers.find(
         (ledger) => ledger.currency === 'USD' && ledger.timestamp < getTodayMidnightTime()
       );

@@ -26,10 +26,10 @@ chrome.extension.onMessage.addListener((request) => {
       text: Math.abs(badgeValue).toFixed(2),
     });
     chrome.browserAction.setBadgeBackgroundColor({
-      color: badgeValue > 0 ? POSITIVE_COLOR : NEGATIVE_COLOR,
+      color: badgeValue >= 0 ? POSITIVE_COLOR : NEGATIVE_COLOR,
     });
 
-    if (badgeValue > 0 && !isPositive) {
+    if (badgeValue >= 0 && !isPositive) {
       isPositive = true;
 
       chrome.browserAction.setIcon({ path: PROFIT_ICON_PATH });
@@ -38,7 +38,7 @@ chrome.extension.onMessage.addListener((request) => {
 
       chrome.browserAction.setIcon({ path: LOSS_ICON_PATH });
     }
-  } else if (!badgeValue) {
+  } else if (typeof badgeValue !== 'number') {
     setDefaultBadge();
   }
 });
