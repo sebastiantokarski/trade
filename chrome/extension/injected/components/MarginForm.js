@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import SimpleBar from 'simplebar-react';
-import { fetchData, log } from '../utils';
+import { fetchData } from '../utils';
 import {
   getMarginInfo,
   retrievePositions,

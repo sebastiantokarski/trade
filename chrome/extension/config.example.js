@@ -32,3 +32,5 @@ export const RISK_OPTIONS = {
   very_high: { name: 'very_high', value: 0.12, label: 'Very high risk' },
   maximum: { name: 'maximum', value: 0.15, label: 'Maximum risk' },
 };
+
+export const WARNING_MODE_CLASS = 'warning-mode';
