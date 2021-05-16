@@ -52,19 +52,38 @@ const TotalPLPerc = styled.span`
 `;
 
 const LastChanges = () => {
-  const lastChangesTypes = ['Today', 'Last days'];
+  const lastChangesTypes = ['Today', 'Last days', 'Transfers'];
   let sumPLPerc = 0;
 
   const [lastChangeType, setLastChangesType] = useState(lastChangesTypes[0]);
 
   const { ledgers, currDayBalance } = useSelector((state) => state.account);
 
-  const lastLedgers = ledgers
-    .filter((ledger) => ledger.description && ledger.description.match('Position closed'))
-    .filter((ledger) => (lastChangeType === 'Today' ? isDateFromToday(ledger.timestamp) : true));
+  const getTodayTrades = () => {
+    const todayLedgers = ledgers.filter(
+      (ledger) =>
+        ledger.description &&
+        ledger.description.match('Position closed') &&
+        isDateFromToday(ledger.timestamp)
+    );
 
-  if (lastChangeType === 'Last days') {
-    lastLedgers.reduce(
+    return todayLedgers.map((ledger) => {
+      const { balance, timestamp } = ledger;
+
+      return {
+        // balance - ~fees
+        value: balance * 0.99,
+        timestamp,
+      };
+    });
+  };
+
+  const getLastDaysTrades = () => {
+    const lastLedgers = ledgers
+      .filter((ledger) => ledger.description && ledger.description.match('Position closed'))
+      .filter((ledger) => (lastChangeType === 'Today' ? isDateFromToday(ledger.timestamp) : true));
+
+    const valueByDays = lastLedgers.reduce(
       (prev, ledger) => {
         const { timestamp, balance } = ledger;
         const currDate = new Date(timestamp).toLocaleDateString();
@@ -78,47 +97,67 @@ const LastChanges = () => {
         [new Date().toLocaleDateString()]: null,
       }
     );
-  }
+
+    return Object.keys(valueByDays).map((date) => {
+      return {
+        timestamp: date,
+        value: valueByDays[date],
+      };
+    });
+  };
+  const getTransfers = () => {
+    const lastTransfers = ledgers.filter(
+      (ledger) =>
+        ledger.description &&
+        ledger.description.match(
+          /Transfer of [\d\.]+ USD from wallet Trading to Exchange on wallet exchange/
+        )
+    );
+
+    const valueByDays = lastTransfers.reduce(
+      (prev, ledger) => {
+        const { timestamp, amout } = ledger;
+        const currDate = new Date(timestamp).toLocaleDateString();
+
+        if (prev[currDate] === null || prev[currDate] === undefined) {
+          prev[currDate] = amout;
+        } else {
+          prev[currDate] += amout;
+        }
+
+        return prev;
+      },
+      {
+        [new Date().toLocaleDateString()]: null,
+      }
+    );
+
+    return Object.keys(valueByDays).map((date) => {
+      return {
+        timestamp: date,
+        value: valueByDays[date],
+      };
+    });
+  };
 
   const getLastChanges = () => {
     if (lastChangeType === 'Today') {
-      lastLedgers.push({
-        initial: true,
-        balance: currDayBalance,
-        timestamp: new Date().setHours(0, 0, 0, 0),
-        change: 0,
-      });
+      return getTodayTrades();
+    } else if (lastChangeType === 'Last days') {
+      return getLastDaysTrades();
+    } else if (lastChangeType === 'Transfers') {
+      return getTransfers();
     }
-
-    const changes = lastLedgers
-      .map((ledger, index) => {
-        const { balance, timestamp, initial } = ledger;
-        const nextLedger = lastLedgers[index + 1];
-
-        if (initial || !nextLedger) {
-          return undefined;
-        }
-        return {
-          // balance - ~fees
-          value: balance * 0.99,
-          change: ((balance - nextLedger.balance) / nextLedger.balance) * 100,
-          timestamp,
-        };
-      })
-      .filter((change) => change !== undefined);
-
-    if (lastChangeType === 'Today') {
-      return changes;
-    }
-
-    return changes; //.reduce((prev, curr) => {}, []);
+    return [];
   };
 
   const lastChanges = getLastChanges();
 
   const handleTypeChange = () => {
     setLastChangesType((ctype) => {
-      return lastChangesTypes.filter((type) => type !== ctype)[0];
+      const currIndex = lastChangesTypes.findIndex((type) => type === ctype);
+
+      return lastChangesTypes[currIndex + 1] || lastChangesTypes[0];
     });
   };
 
@@ -138,13 +177,17 @@ const LastChanges = () => {
       </Title>
       <SimpleBar style={{ maxHeight: '205px' }}>
         {lastChanges.map((data, index) => {
-          const { change, value, timestamp } = data;
-          const className = change > 0 ? 'bfx-green-text' : 'bfx-red-text';
+          const { value, timestamp } = data;
+          const nextValue = lastChanges[index + 1] ? lastChanges[index + 1].value : null;
+          const change = nextValue && ((value - nextValue) / nextValue) * 100;
+          const className = change === null || change > 0 ? 'bfx-green-text' : 'bfx-red-text';
 
           return (
             <div key={index}>
-              <Timestamp>{timeSince(timestamp)}</Timestamp>
-              <ChangeValue className={className}>{change.toFixed(2)}%</ChangeValue>
+              <Timestamp>
+                {typeof timestamp === 'string' ? timestamp : timeSince(timestamp)}
+              </Timestamp>
+              <ChangeValue className={className}>{change && `${change.toFixed(2)}%`}</ChangeValue>
               <ChangeValue className={className}>${value.toFixed(2)}</ChangeValue>
             </div>
           );
