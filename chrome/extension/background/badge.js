@@ -8,12 +8,28 @@ import {
   CHECK_BADGE_INTERVAL,
 } from '../config';
 
-let isPositive = false;
+let isPositive = null;
 let lastUpdateTimestamp = new Date().getTime();
 
 const setDefaultBadge = () => {
   chrome.browserAction.setIcon({ path: DEFAULT_ICON_PATH });
   chrome.browserAction.setBadgeText({ text: '' });
+};
+
+const setIcon = (badgeValue) => {
+  if (isPositive === null) {
+    isPositive = badgeValue >= 0;
+
+    chrome.browserAction.setIcon({ path: badgeValue >= 0 ? PROFIT_ICON_PATH : LOSS_ICON_PATH });
+  } else if (badgeValue >= 0 && isPositive === false) {
+    isPositive = true;
+
+    chrome.browserAction.setIcon({ path: PROFIT_ICON_PATH });
+  } else if (badgeValue < 0 && isPositive === true) {
+    isPositive = false;
+
+    chrome.browserAction.setIcon({ path: LOSS_ICON_PATH });
+  }
 };
 
 chrome.extension.onMessage.addListener((request) => {
@@ -29,15 +45,7 @@ chrome.extension.onMessage.addListener((request) => {
       color: badgeValue >= 0 ? POSITIVE_COLOR : NEGATIVE_COLOR,
     });
 
-    if (badgeValue >= 0 && !isPositive) {
-      isPositive = true;
-
-      chrome.browserAction.setIcon({ path: PROFIT_ICON_PATH });
-    } else if (badgeValue < 0 && isPositive) {
-      isPositive = false;
-
-      chrome.browserAction.setIcon({ path: LOSS_ICON_PATH });
-    }
+    setIcon(badgeValue);
   } else if (typeof badgeValue !== 'number') {
     setDefaultBadge();
   }
