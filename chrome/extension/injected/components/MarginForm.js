@@ -65,7 +65,7 @@ const MarginActionBtn = styled.button`
 const MarginForm = () => {
   const [risk, setRisk] = useState();
 
-  const { currBalance, minBalance } = useSelector((state) => state.account);
+  const { currBalance } = useSelector((state) => state.account);
   const { isActive, plValue } = useSelector((state) => state.position);
 
   const blockMarginActions = false; // currBalance < minBalance;

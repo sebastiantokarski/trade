@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { BalanceChart, PanelHeader, MarginForm, LastChanges, Statistics } from './components';
+import {
+  BalanceChart,
+  PanelHeader,
+  MarginForm,
+  LastChanges,
+  Statistics,
+  StartTradeDayPopup,
+} from './components';
 import { startObservingPosition } from './redux/slices/positionSlice';
 import { WARNING_MODE_CLASS } from '../config';
 
@@ -80,6 +87,7 @@ const App = () => {
           <Statistics />
         </ContentContainer>
       </ContentWrapper>
+      <StartTradeDayPopup />
     </AppWrapper>
   );
 };

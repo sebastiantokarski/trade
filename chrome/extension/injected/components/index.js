@@ -5,6 +5,7 @@ import RiskOption from './RiskOption';
 import LastChanges from './LastChanges';
 import Statistics from './Statistics';
 import PanelHeader from './PanelHeader';
+import StartTradeDayPopup from './StartTradeDayPopup';
 
 export {
   BalanceChart,
@@ -14,4 +15,5 @@ export {
   LastChanges,
   Statistics,
   PanelHeader,
+  StartTradeDayPopup,
 };

@@ -161,7 +161,9 @@ const LastChanges = () => {
     });
   };
 
-  if (lastChanges.length) {
+  if (lastChangeType === 'Transfers') {
+    sumPLPerc = lastChanges.reduce((a, b) => a + b.value, 0);
+  } else if (lastChanges.length) {
     sumPLPerc = ((lastChanges[0].value - currDayBalance) / currDayBalance) * 100;
   }
 
@@ -169,10 +171,12 @@ const LastChanges = () => {
     <MainWrapper>
       <Title>
         <TitleBtn onClick={handleTypeChange}>
-          {lastChangeType} Trades{'\u00A0\u00A0'}
+          {lastChangeType === 'Transfers' ? lastChangeType : `${lastChangeType} Trades`}
+          {'\u00A0'}
         </TitleBtn>
         <TotalPLPerc className={sumPLPerc > 0 ? 'bfx-green-text' : 'bfx-red-text'}>
-          {sumPLPerc > 0 ? '▲' : '▼'} {sumPLPerc.toFixed(2)}%
+          {sumPLPerc > 0 ? '▲' : '▼'} {sumPLPerc.toFixed(2)}
+          {lastChangeType === 'Transfers' ? '$' : '%'}
         </TotalPLPerc>
       </Title>
       <SimpleBar style={{ maxHeight: '205px' }}>

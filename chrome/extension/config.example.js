@@ -34,3 +34,4 @@ export const RISK_OPTIONS = {
 };
 
 export const WARNING_MODE_CLASS = 'warning-mode';
+export const STORAGE_STR = '_str';

@@ -84,6 +84,10 @@ import Root from './injected/Root';
       50% { opacity: .3; } 
       100% { opacity: 1; }
     }
+
+    .popup-overlay {
+      background: #1b262d;
+    }
   `;
   document.head.appendChild(customStyle);
 })();

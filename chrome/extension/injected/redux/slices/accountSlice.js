@@ -29,10 +29,13 @@ const account = createSlice({
     },
     performData(state, action) {
       const latestUSDLedger = state.ledgers.find(
-        (ledger) => ledger.currency === 'USD' && !ledger.description.match('Transfer')
+        (ledger) => ledger.currency === 'USD' && !ledger.description.match(/Transfer|Exchange/)
       );
       const yesterdayUSDLedger = state.ledgers.find(
-        (ledger) => ledger.currency === 'USD' && ledger.timestamp < getTodayMidnightTime()
+        (ledger) =>
+          ledger.currency === 'USD' &&
+          ledger.timestamp < getTodayMidnightTime() &&
+          !ledger.description.match(/Transfer|Exchange/)
       );
 
       if (latestUSDLedger) {
