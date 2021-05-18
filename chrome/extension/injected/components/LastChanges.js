@@ -94,7 +94,7 @@ const LastChanges = () => {
         return prev;
       },
       {
-        [new Date().toLocaleDateString()]: null,
+        [new Date().toLocaleDateString()]: currDayBalance,
       }
     );
 
@@ -119,7 +119,7 @@ const LastChanges = () => {
         const { timestamp, amout } = ledger;
         const currDate = new Date(timestamp).toLocaleDateString();
 
-        if (prev[currDate] === null || prev[currDate] === undefined) {
+        if (prev[currDate] === undefined) {
           prev[currDate] = amout;
         } else {
           prev[currDate] += amout;
@@ -128,7 +128,7 @@ const LastChanges = () => {
         return prev;
       },
       {
-        [new Date().toLocaleDateString()]: null,
+        [new Date().toLocaleDateString()]: 0,
       }
     );
 

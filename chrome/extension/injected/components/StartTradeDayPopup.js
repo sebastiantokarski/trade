@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Popup from 'reactjs-popup';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
-import { clearStorage, getStorageData, setStorageData } from '../storage';
+import { clearStorage, getStorageData } from '../storage';
 import { STORAGE_STR, TEXT_1, TEXT_2 } from '../../config';
 
 const PopupContent = styled.div`
