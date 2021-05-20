@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import SimpleBar from 'simplebar-react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
-import { timeSince, isDateFromToday } from '../utils';
+import { timeSince, isDateFromToday, getTodayDate } from '../utils';
 
 const MainWrapper = styled.div`
   position: relative;
@@ -94,7 +94,7 @@ const LastChanges = () => {
         return prev;
       },
       {
-        [new Date().toLocaleDateString()]: currBalance,
+        [getTodayDate()]: currBalance,
       }
     );
 
@@ -126,7 +126,7 @@ const LastChanges = () => {
         return prev;
       },
       {
-        [new Date().toLocaleDateString()]: 0,
+        [getTodayDate()]: 0,
       }
     );
 

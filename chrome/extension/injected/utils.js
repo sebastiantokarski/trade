@@ -127,3 +127,11 @@ export const manageRisk = (type, price, risk) => {
     return price * (1 + (riskValue - feeInPerc) / leverage);
   }
 };
+
+export const formatTime = (timeInSeconds) => {
+  return new Date(timeInSeconds * 1e3).toISOString().slice(-13, -5);
+};
+
+export const getTodayDate = () => {
+  return new Date().toLocaleDateString();
+};
