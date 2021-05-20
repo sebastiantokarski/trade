@@ -16,18 +16,25 @@ const BalanceChart = () => {
 
     try {
       chartData = ledgers
-        .filter((ledger) => ledger.description && ledger.description.match('Position closed'))
-        .filter((ledger) => {
-          return isDateFromToday(ledger.timestamp);
-        })
+        .filter(
+          (ledger) =>
+            ledger.description &&
+            ledger.description.match('Position closed') &&
+            isDateFromToday(ledger.timestamp)
+        )
         .map((ledger, index) => ({
           x: index,
           y: ledger.balance,
         }));
+
+      chartData.push({
+        x: chartData.length,
+        y: currDayBalance,
+      });
+
+      return chartData;
     } catch (ex) {
       log('error', 'FAILED TO PROCESS BALANCE CHART DATA', ex);
-    } finally {
-      return chartData;
     }
   };
 
@@ -38,7 +45,7 @@ const BalanceChart = () => {
           labels: Array.from(Array(getChartData().length).keys()).reverse(),
           datasets: [
             {
-              label: 'Kapitał',
+              label: 'Balance',
               fill: true,
               pointRadius: 0,
               borderWidth: 2,

@@ -44,7 +44,7 @@ const Timestamp = styled.span`
 const ChangeValue = styled.span`
   display: inline-block;
   margin: 0.1rem 1rem;
-  min-width: 3.5rem;
+  min-width: 4.5rem;
 `;
 
 const TotalPLPerc = styled.span`
@@ -57,7 +57,7 @@ const LastChanges = () => {
 
   const [lastChangeType, setLastChangesType] = useState(lastChangesTypes[0]);
 
-  const { ledgers, currDayBalance } = useSelector((state) => state.account);
+  const { ledgers, currDayBalance, currBalance } = useSelector((state) => state.account);
 
   const getTodayTrades = () => {
     const todayLedgers = ledgers.filter(
@@ -94,16 +94,14 @@ const LastChanges = () => {
         return prev;
       },
       {
-        [new Date().toLocaleDateString()]: currDayBalance,
+        [new Date().toLocaleDateString()]: currBalance,
       }
     );
 
-    return Object.keys(valueByDays).map((date) => {
-      return {
-        timestamp: date,
-        value: valueByDays[date],
-      };
-    });
+    return Object.keys(valueByDays).map((date) => ({
+      timestamp: date,
+      value: valueByDays[date],
+    }));
   };
   const getTransfers = () => {
     const lastTransfers = ledgers.filter(
@@ -132,12 +130,10 @@ const LastChanges = () => {
       }
     );
 
-    return Object.keys(valueByDays).map((date) => {
-      return {
-        timestamp: date,
-        value: valueByDays[date],
-      };
-    });
+    return Object.keys(valueByDays).map((date) => ({
+      timestamp: date,
+      value: valueByDays[date],
+    }));
   };
 
   const getLastChanges = () => {
@@ -182,7 +178,11 @@ const LastChanges = () => {
       <SimpleBar style={{ maxHeight: '205px' }}>
         {lastChanges.map((data, index) => {
           const { value, timestamp } = data;
-          const nextValue = lastChanges[index + 1] ? lastChanges[index + 1].value : null;
+          const nextValue = lastChanges[index + 1]
+            ? lastChanges[index + 1].value
+            : lastChangeType === 'Today'
+            ? currDayBalance
+            : null;
           const change = nextValue && ((value - nextValue) / nextValue) * 100;
           const className = change === null || change > 0 ? 'bfx-green-text' : 'bfx-red-text';
 

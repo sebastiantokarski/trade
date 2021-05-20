@@ -74,17 +74,15 @@ const App = () => {
     <AppWrapper>
       <PanelHeader />
       <ContentWrapper>
-        <ContentContainer width={'30%'}>
+        <ContentContainer width={'33%'}>
           <MarginForm />
         </ContentContainer>
-        <ContentContainer width={'30%'}>
+        <ContentContainer width={'33%'}>
           <BalanceChart />
-        </ContentContainer>
-        <ContentContainer width={'30%'}>
-          <LastChanges />
-        </ContentContainer>
-        <ContentContainer width={'10%'}>
           <Statistics />
+        </ContentContainer>
+        <ContentContainer width={'33%'}>
+          <LastChanges />
         </ContentContainer>
       </ContentWrapper>
       <StartTradeDayPopup />

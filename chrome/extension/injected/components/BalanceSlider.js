@@ -19,7 +19,7 @@ const BalanceSlider = () => {
 
   const sliderRange = {
     min: minBalance * 0.9,
-    max: targetBalance * 1.4,
+    max: targetBalance * 1.2,
   };
 
   const sliderTooltips = sliderPoints.map(() => true);
