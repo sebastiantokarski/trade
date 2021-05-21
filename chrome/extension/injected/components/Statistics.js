@@ -3,7 +3,7 @@ import { useTimer } from 'use-timer';
 import styled from 'styled-components';
 import { formatTime, getTodayDate } from '../utils';
 import { STORAGE_TS } from '../../config';
-import { getStorageData, setStorageData } from '../storage';
+import { clearStorage, getStorageData, setStorageData } from '../storage';
 
 const StatisticsWrapper = styled.div`
   display: flex;
@@ -36,8 +36,6 @@ const RunningStatus = styled.div`
 const Statistics = () => {
   const { time, start, pause, status, advanceTime } = useTimer();
 
-  const [initialTime, setInitialTime] = useState(0);
-
   useEffect(() => {
     const handleVisibilityChange = () => (document.hidden ? pause() : start());
     const handleWindowBlur = () => (document.hidden ? pause() : null);
@@ -45,28 +43,23 @@ const Statistics = () => {
     window.addEventListener('focus', start);
     window.addEventListener('blur', handleWindowBlur);
     document.addEventListener('visibilitychange', handleVisibilityChange);
+    start();
 
     return () => {
       window.removeEventListener('focus', start);
       window.removeEventListener('blur', handleWindowBlur);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      pause();
     };
   }, []);
 
   useEffect(async () => {
-    const timeFromStorage = (await getStorageData(`${STORAGE_TS}_${getTodayDate()}`)) || 0;
+    const timeFromStorage = await getStorageData(`${STORAGE_TS}_${getTodayDate()}`);
 
     if (timeFromStorage) {
-      setInitialTime(timeFromStorage);
+      advanceTime(timeFromStorage);
     }
   }, []);
-
-  useEffect(async () => {
-    if (status === 'RUNNNING' && initialTime) {
-      advanceTime(initialTime);
-      setInitialTime(0);
-    }
-  }, [status]);
 
   useEffect(() => setStorageData({ [`${STORAGE_TS}_${getTodayDate()}`]: time }), [time]);
 
