@@ -86,12 +86,12 @@ const MarginForm = () => {
     const plValueMod = type === 'buy' ? plValue * 0.15 : plValue * -0.15;
     const marketAmount = type === 'buy' ? marginInfo.buy : marginInfo.sell * -1;
 
-    if (plValue > 0) {
-      await transferUSDToExchangeWallet(plValue * 0.15);
-    }
-
     if (marketAmount !== 0) {
       const modMarketAmount = isActive && plValue > 0 ? marketAmount - plValueMod : marketAmount;
+
+      if (plValue > 0) {
+        await transferUSDToExchangeWallet(plValue * 0.15);
+      }
 
       await submitMarketOrder(modMarketAmount);
     }

@@ -109,7 +109,9 @@ const LastChanges = () => {
         ledger.description &&
         ledger.description.match(
           /Transfer of [\d\.]+ USD from wallet Trading to Exchange on wallet exchange/
-        )
+        ) &&
+        // From 24.05.2021
+        ledger.timestamp > new Date(1621807200000).getTime()
     );
 
     const valueByDays = lastTransfers.reduce(
@@ -192,7 +194,7 @@ const LastChanges = () => {
                 {typeof timestamp === 'string' ? timestamp : timeSince(timestamp)}
               </Timestamp>
               <ChangeValue className={className}>{change && `${change.toFixed(2)}%`}</ChangeValue>
-              <ChangeValue className={className}>${value.toFixed(2)}</ChangeValue>
+              <ChangeValue className={className}>${value && value.toFixed(2)}</ChangeValue>
             </div>
           );
         })}

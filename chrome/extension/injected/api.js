@@ -155,12 +155,16 @@ export const connectWebsocket = (cb) => {
 };
 
 export const transferUSDToExchangeWallet = async (amount) => {
-  const transferResponse = await fetchData('v2/auth/w/transfer', {
-    from: 'margin',
-    to: 'exchange',
-    currency: 'USD',
-    amount: amount.toFixed(2),
-  });
+  try {
+    const transferResponse = await fetchData('v2/auth/w/transfer', {
+      from: 'margin',
+      to: 'exchange',
+      currency: 'USD',
+      amount: amount.toFixed(2),
+    });
 
-  return transferResponse;
+    return transferResponse;
+  } catch (ex) {
+    log('error', 'FAILED TO TRANSFER USD TO EXCHANGE WALLET', ex);
+  }
 };
