@@ -35,6 +35,7 @@ const account = createSlice({
         (ledger) =>
           ledger.currency === 'USD' &&
           ledger.timestamp < getTodayMidnightTime() &&
+          ledger.balance !== 0 &&
           !ledger.description.match(/Transfer|Exchange/)
       );
 

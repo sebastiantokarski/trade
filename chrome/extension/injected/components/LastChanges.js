@@ -160,7 +160,7 @@ const LastChanges = () => {
   };
 
   if (lastChangeType === 'Transfers') {
-    sumPLPerc = lastChanges.reduce((a, b) => a + b.value, 0);
+    sumPLPerc = lastChanges.reduce((a, b) => a + b.value, 0) / lastChanges.length;
   } else if (lastChanges.length) {
     sumPLPerc = ((lastChanges[0].value - currDayBalance) / currDayBalance) * 100;
   }
@@ -173,6 +173,7 @@ const LastChanges = () => {
           {'\u00A0'}
         </TitleBtn>
         <TotalPLPerc className={sumPLPerc > 0 ? 'bfx-green-text' : 'bfx-red-text'}>
+          {lastChangeType === 'Transfers' ? '~' : ''}
           {sumPLPerc > 0 ? '▲' : '▼'} {sumPLPerc.toFixed(2)}
           {lastChangeType === 'Transfers' ? '$' : '%'}
         </TotalPLPerc>
@@ -185,7 +186,10 @@ const LastChanges = () => {
             : lastChangeType === 'Today'
             ? currDayBalance
             : null;
-          const change = nextValue && ((value - nextValue) / nextValue) * 100;
+          const change =
+            lastChangeType === 'Transfers'
+              ? lastChanges.slice(index, lastChanges.length).reduce((a, b) => a + b.value, 0)
+              : nextValue && ((value - nextValue) / nextValue) * 100;
           const className = change === null || change > 0 ? 'bfx-green-text' : 'bfx-red-text';
 
           return (
@@ -193,7 +197,11 @@ const LastChanges = () => {
               <Timestamp>
                 {typeof timestamp === 'string' ? timestamp : timeSince(timestamp)}
               </Timestamp>
-              <ChangeValue className={className}>{change && `${change.toFixed(2)}%`}</ChangeValue>
+              <ChangeValue className={className}>
+                {lastChangeType === 'Transfers'
+                  ? `${change.toFixed(2)}$`
+                  : change && `${change.toFixed(2)}%`}
+              </ChangeValue>
               <ChangeValue className={className}>${value && value.toFixed(2)}</ChangeValue>
             </div>
           );
