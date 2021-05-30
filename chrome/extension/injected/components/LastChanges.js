@@ -132,6 +132,16 @@ const LastChanges = () => {
       }
     );
 
+    const transferModifiers = {
+      '30.05.2021': -263,
+    };
+
+    Object.keys(transferModifiers).map((date) => {
+      if (valueByDays[date] !== undefined) {
+        valueByDays[date] += transferModifiers[date];
+      }
+    });
+
     return Object.keys(valueByDays).map((date) => ({
       timestamp: date,
       value: valueByDays[date],
