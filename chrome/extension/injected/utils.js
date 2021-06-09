@@ -7,6 +7,7 @@ import {
   WEBSOCKET_API_KEY,
   WEBSOCKET_API_SECRET_KEY,
   RISK_OPTIONS,
+  MS_PER_DAY,
 } from '../config';
 
 export const log = (type, ...args) => {
@@ -134,4 +135,14 @@ export const formatTime = (timeInSeconds) => {
 
 export const getTodayDate = () => {
   return new Date().toLocaleDateString();
+};
+
+export const getDateFromString = (date) => {
+  const dateNums = date.match(/([\d]+).([\d]+).([\d]+)/);
+
+  return new Date(Number(dateNums[3]), Number(dateNums[2]) - 1, Number(dateNums[1]));
+};
+
+export const isDiffBiggerThanOneDay = (date1, date2) => {
+  return Math.abs(date1 - date2) > MS_PER_DAY;
 };

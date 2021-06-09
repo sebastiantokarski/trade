@@ -2,7 +2,13 @@ import React, { useState } from 'react';
 import SimpleBar from 'simplebar-react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
-import { timeSince, isDateFromToday, getTodayDate } from '../utils';
+import {
+  timeSince,
+  isDateFromToday,
+  getTodayDate,
+  getDateFromString,
+  isDiffBiggerThanOneDay,
+} from '../utils';
 
 const MainWrapper = styled.div`
   position: relative;
@@ -84,9 +90,17 @@ const LastChanges = () => {
       .filter((ledger) => (lastChangeType === 'Today' ? isDateFromToday(ledger.timestamp) : true));
 
     const valueByDays = lastLedgers.reduce(
-      (prev, ledger) => {
+      (prev, ledger, index) => {
         const { timestamp, balance } = ledger;
         const currDate = new Date(timestamp).toLocaleDateString();
+        let lastDate = getDateFromString(Object.keys(prev).pop());
+
+        while (isDiffBiggerThanOneDay(lastDate, getDateFromString(currDate))) {
+          lastDate = new Date(lastDate.setDate(lastDate.getDate() - 1));
+
+          prev[lastDate.toLocaleDateString()] = lastLedgers[index + 1].balance;
+        }
+
         if (prev[currDate] === null || prev[currDate] === undefined) {
           prev[currDate] = balance;
         }
@@ -118,6 +132,12 @@ const LastChanges = () => {
       (prev, ledger) => {
         const { timestamp, amout } = ledger;
         const currDate = new Date(timestamp).toLocaleDateString();
+        let lastDate = getDateFromString(Object.keys(prev).pop());
+
+        while (isDiffBiggerThanOneDay(lastDate, getDateFromString(currDate))) {
+          lastDate = new Date(lastDate.setDate(lastDate.getDate() - 1));
+          prev[lastDate.toLocaleDateString()] = 0;
+        }
 
         if (prev[currDate] === undefined) {
           prev[currDate] = amout;
