@@ -154,6 +154,7 @@ const LastChanges = () => {
 
     const transferModifiers = {
       '30.05.2021': -263,
+      '14.06.2021': -584,
     };
 
     Object.keys(transferModifiers).map((date) => {
