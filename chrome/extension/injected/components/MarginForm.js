@@ -147,7 +147,7 @@ const MarginForm = () => {
       <div className="orderform__actions">
         <MarginActionBtn
           type="button"
-          className="ui-button ui-button--green-o"
+          className="ui-button ui-button--green"
           onClick={() => handleMarginAction('buy')}
           disabled={!risk || blockMarginActions}
         >
@@ -155,7 +155,7 @@ const MarginForm = () => {
         </MarginActionBtn>
         <MarginActionBtn
           type="button"
-          className="ui-button ui-button--red-o"
+          className="ui-button ui-button--red"
           onClick={() => handleMarginAction('sell')}
           disabled={!risk || blockMarginActions}
         >

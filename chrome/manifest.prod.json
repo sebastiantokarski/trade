@@ -17,5 +17,5 @@
     "page": "background.html"
   },
   "permissions": ["contextMenus", "tabs", "activeTab", "storage", "https://trading.bitfinex.com/*"],
-  "content_security_policy": "default-src 'self'; script-src 'self'; style-src * 'unsafe-inline'; img-src 'self' data:;"
+  "content_security_policy": "default-src https://s.tradingview.com/ 'self'; script-src 'self' https://s3.tradingview.com/tv.js; style-src * 'unsafe-inline'; img-src 'self' data:;"
 }
