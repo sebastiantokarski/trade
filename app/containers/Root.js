@@ -1,19 +1,20 @@
-import React, { Component, PropTypes } from 'react';
+import React from 'react';
 import { Provider } from 'react-redux';
-import App from './App';
+import TradingViewWidget, { Themes } from 'react-tradingview-widget';
 
-export default class Root extends Component {
+const Root = (props) => {
+  const { store } = props;
 
-  static propTypes = {
-    store: PropTypes.object.isRequired
-  };
+  return (
+    <Provider store={store}>
+      <TradingViewWidget
+        height={300}
+        symbol="EOSUSD"
+        theme={Themes.dark}
+        timezone="Europe/Warsaw"
+      />
+    </Provider>
+  );
+};
 
-  render() {
-    const { store } = this.props;
-    return (
-      <Provider store={store}>
-        <App />
-      </Provider>
-    );
-  }
-}
+export default Root;

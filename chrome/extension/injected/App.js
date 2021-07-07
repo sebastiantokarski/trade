@@ -10,7 +10,8 @@ import {
   StartTradeDayPopup,
 } from './components';
 import { startObservingPosition } from './redux/slices/positionSlice';
-import { WARNING_MODE_CLASS } from '../config';
+import { WARNING_MODE_CLASS, UPDATE_SESSION_INTERVAL } from '../config';
+import { useInterval } from './hooks';
 
 const AppWrapper = styled.div`
   overflow: visible !important;
@@ -33,6 +34,14 @@ const App = () => {
 
   const { plPerc } = useSelector((state) => state.position);
   const { minBalance, currBalance } = useSelector((state) => state.account);
+
+  useInterval(() => {
+    const markerEquiv = document.getElementById('enable-toggle-market-equiv');
+
+    if (markerEquiv) {
+      markerEquiv.click();
+    }
+  }, UPDATE_SESSION_INTERVAL);
 
   useEffect(() => {
     dispatch(startObservingPosition());

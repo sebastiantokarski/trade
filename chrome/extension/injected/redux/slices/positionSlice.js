@@ -43,7 +43,7 @@ export const startObservingPosition = () => async (dispatch, getState) => {
 
         dispatch(
           updatePosition({
-            plValue: Number(plValueEl.textContent),
+            plValue: Number(plValueEl.textContent.replace(',', '')),
             plPerc: Number(plPercEl.textContent),
           })
         );

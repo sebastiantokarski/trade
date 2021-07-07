@@ -1,26 +1,17 @@
-const path = require("path");
-const webpack = require("webpack");
-const autoprefixer = require("autoprefixer");
+const path = require('path');
+const webpack = require('webpack');
+const autoprefixer = require('autoprefixer');
 
-const host = "localhost";
+const host = 'localhost';
 const port = 3000;
-const customPath = path.join(__dirname, "./customPublicPath");
-const hotScript =
-  "webpack-hot-middleware/client?path=__webpack_hmr&dynamicPublicPath=true";
+const customPath = path.join(__dirname, './customPublicPath');
+const hotScript = 'webpack-hot-middleware/client?path=__webpack_hmr&dynamicPublicPath=true';
 
 const baseDevConfig = () => ({
-  devtool: "eval-cheap-module-source-map",
+  devtool: 'eval-cheap-module-source-map',
   entry: {
-    todoapp: [
-      customPath,
-      hotScript,
-      path.join(__dirname, "../chrome/extension/todoapp"),
-    ],
-    background: [
-      customPath,
-      hotScript,
-      path.join(__dirname, "../chrome/extension/background"),
-    ],
+    popup: [customPath, hotScript, path.join(__dirname, '../chrome/extension/popup')],
+    background: [customPath, hotScript, path.join(__dirname, '../chrome/extension/background')],
   },
   devMiddleware: {
     publicPath: `http://${host}:${port}/js`,
@@ -28,15 +19,15 @@ const baseDevConfig = () => ({
       colors: true,
     },
     noInfo: true,
-    headers: { "Access-Control-Allow-Origin": "*" },
+    headers: { 'Access-Control-Allow-Origin': '*' },
   },
   hotMiddleware: {
-    path: "/js/__webpack_hmr",
+    path: '/js/__webpack_hmr',
   },
   output: {
-    path: path.join(__dirname, "../dev/js"),
-    filename: "[name].bundle.js",
-    chunkFilename: "[id].chunk.js",
+    path: path.join(__dirname, '../dev/js'),
+    filename: '[name].bundle.js',
+    chunkFilename: '[id].chunk.js',
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
@@ -45,31 +36,31 @@ const baseDevConfig = () => ({
     new webpack.DefinePlugin({
       __HOST__: `'${host}'`,
       __PORT__: port,
-      "process.env": {
-        NODE_ENV: JSON.stringify("development"),
+      'process.env': {
+        NODE_ENV: JSON.stringify('development'),
       },
     }),
   ],
   resolve: {
-    extensions: ["*", ".js"],
+    extensions: ['*', '.js'],
   },
   module: {
     rules: [
       {
         test: /\.js$/,
-        loader: "babel-loader",
+        loader: 'babel-loader',
         exclude: /node_modules/,
         options: {
-          presets: ["react-hmre"],
+          presets: ['react-hmre'],
         },
       },
       {
         test: /\.css$/,
         use: [
-          "style-loader",
-          "css-loader?modules&sourceMap&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]",
+          'style-loader',
+          'css-loader?modules&sourceMap&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]',
           {
-            loader: "postcss-loader",
+            loader: 'postcss-loader',
             options: {
               plugins: () => [autoprefixer],
             },
@@ -81,16 +72,13 @@ const baseDevConfig = () => ({
 });
 
 const injectPageConfig = baseDevConfig();
-injectPageConfig.entry = [
-  customPath,
-  path.join(__dirname, "../chrome/extension/inject"),
-];
+injectPageConfig.entry = [customPath, path.join(__dirname, '../chrome/extension/inject')];
 delete injectPageConfig.hotMiddleware;
 delete injectPageConfig.module.rules[0].options;
 injectPageConfig.plugins.shift(); // remove HotModuleReplacementPlugin
 injectPageConfig.output = {
-  path: path.join(__dirname, "../dev/js"),
-  filename: "inject.bundle.js",
+  path: path.join(__dirname, '../dev/js'),
+  filename: 'inject.bundle.js',
 };
 const appConfig = baseDevConfig();
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Root from '../../app/containers/Root';
-import './todoapp.css';
+import './popup.css';
 
 chrome.storage.local.get('state', (obj) => {
   const { state } = obj;
@@ -9,8 +9,5 @@ chrome.storage.local.get('state', (obj) => {
 
   const createStore = require('../../app/store/configureStore');
 
-  ReactDOM.render(
-    <Root store={createStore(initialState)} />,
-    document.querySelector('#root')
-  );
+  ReactDOM.render(<Root store={createStore(initialState)} />, document.querySelector('#root'));
 });
