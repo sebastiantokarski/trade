@@ -35,6 +35,7 @@ const RunningStatus = styled.div`
 
 const Statistics = () => {
   const { time, start, pause, status, advanceTime } = useTimer();
+  const [todayDate, setTodayDate] = useState(getTodayDate());
 
   useEffect(() => {
     const handleVisibilityChange = () => (document.hidden ? pause() : start());
@@ -54,14 +55,15 @@ const Statistics = () => {
   }, []);
 
   useEffect(async () => {
-    const timeFromStorage = await getStorageData(`${STORAGE_TS}_${getTodayDate()}`);
+    setTodayDate(getTodayDate());
+    const timeFromStorage = await getStorageData(`${STORAGE_TS}_${todayDate}`);
 
     if (timeFromStorage) {
       advanceTime(timeFromStorage);
     }
   }, []);
 
-  useEffect(() => setStorageData({ [`${STORAGE_TS}_${getTodayDate()}`]: time }), [time]);
+  useEffect(() => setStorageData({ [`${STORAGE_TS}_${todayDate}`]: time }), [time]);
 
   return (
     <StatisticsWrapper>

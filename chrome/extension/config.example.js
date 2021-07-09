@@ -22,7 +22,8 @@ export const TARGET_PERC_PROFIT = 0.2;
 
 export const LEDGERS_HISTORY_LIMIT = 1000;
 
-export const CHECK_BADGE_INTERVAL = 20000;
+export const CHECK_BADGE_INTERVAL = 60000;
+export const SESSION_UPDATE_INTERVAL = 60000;
 
 export const RISK_OPTIONS = {
   min_profit: { name: 'min_profit', value: -0.03, label: 'Minimal profit' },
