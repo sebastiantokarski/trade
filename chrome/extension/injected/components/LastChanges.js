@@ -9,38 +9,7 @@ import {
   getDateFromString,
   isDiffBiggerThanOneDay,
 } from '../utils';
-
-const MainWrapper = styled.div`
-  position: relative;
-  max-width: 400px;
-  padding: 20px;
-  border: 1px solid rgba(100, 100, 100, 0.3);
-`;
-
-const Title = styled.span`
-  position: absolute;
-  display: inline-block;
-  padding: 0 12px;
-  background-color: #1b262d;
-  left: 50%;
-  top: 0;
-  transform: translate(-50%, -50%);
-  text-transform: uppercase;
-  white-space: nowrap;
-`;
-
-const TitleBtn = styled.button`
-  background: none;
-  border: none;
-
-  &:hover {
-    color: #969b9e;
-  }
-
-  &:focus {
-    background-color: unset !important;
-  }
-`;
+import { MainWrapper, Title, TitleBtn } from '../theme';
 
 const Timestamp = styled.span`
   display: inline-block;
@@ -58,7 +27,7 @@ const TotalPLPerc = styled.span`
 `;
 
 const LastChanges = () => {
-  const lastChangesTypes = ['Today', 'Last days', 'Transfers'];
+  const lastChangesTypes = ['Today', 'Last days', 'Transfers', 'Sth else'];
   let sumPLPerc = 0;
 
   const [lastChangeType, setLastChangesType] = useState(lastChangesTypes[0]);

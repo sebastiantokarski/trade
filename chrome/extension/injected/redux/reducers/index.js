@@ -1,11 +1,11 @@
 import { combineReducers } from '@reduxjs/toolkit';
-import balanceReducer from '../slices/balanceSlice';
+import pageInfoReducer from '../slices/pageInfoSlice';
 import accountReducer from '../slices/accountSlice';
 import positionReducer from '../slices/positionSlice';
 
 const rootReducer = combineReducers({
-  balance: balanceReducer,
   account: accountReducer,
+  pageInfo: pageInfoReducer,
   position: positionReducer,
 });
 

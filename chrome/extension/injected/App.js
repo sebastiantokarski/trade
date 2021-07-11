@@ -8,10 +8,11 @@ import {
   LastChanges,
   Statistics,
   StartTradeDayPopup,
+  TickersStatus,
 } from './components';
 import { startObservingPosition } from './redux/slices/positionSlice';
-import { WARNING_MODE_CLASS, SESSION_UPDATE_INTERVAL } from '../config';
-import { useInterval } from './hooks';
+import { fetchPageInfo } from './redux/slices/pageInfoSlice';
+import { WARNING_MODE_CLASS } from '../config';
 
 const AppWrapper = styled.div`
   overflow: visible !important;
@@ -35,9 +36,8 @@ const App = () => {
   const { plPerc } = useSelector((state) => state.position);
   const { minBalance, currBalance } = useSelector((state) => state.account);
 
-  useInterval(() => window.focus(), SESSION_UPDATE_INTERVAL);
-
   useEffect(() => {
+    dispatch(fetchPageInfo());
     dispatch(startObservingPosition());
   }, [dispatch]);
 
@@ -74,18 +74,21 @@ const App = () => {
   }, [warningMode]);
 
   return (
-    <AppWrapper>
+    <AppWrapper className="injected_by_extension">
       <PanelHeader />
       <ContentWrapper>
-        <ContentContainer width={'33%'}>
+        <ContentContainer width={'25%'}>
           <MarginForm />
         </ContentContainer>
-        <ContentContainer width={'33%'}>
+        <ContentContainer width={'25%'}>
           <BalanceChart />
           <Statistics />
         </ContentContainer>
-        <ContentContainer width={'33%'}>
+        <ContentContainer width={'25%'}>
           <LastChanges />
+        </ContentContainer>
+        <ContentContainer width={'25%'}>
+          <TickersStatus />
         </ContentContainer>
       </ContentWrapper>
       <StartTradeDayPopup />

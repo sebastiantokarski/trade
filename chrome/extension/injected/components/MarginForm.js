@@ -12,24 +12,7 @@ import {
 } from '../api';
 import RiskOption from './RiskOption';
 import { RISK_OPTIONS } from '../../config';
-
-const MainWrapper = styled.div`
-  position: relative;
-  max-width: 400px;
-  padding: 20px;
-  border: 1px solid rgba(100, 100, 100, 0.3);
-`;
-
-const Title = styled.span`
-  position: absolute;
-  display: inline-block;
-  padding: 0 20px;
-  background-color: #1b262d;
-  left: 50%;
-  top: 0;
-  transform: translate(-50%, -50%);
-  text-transform: uppercase;
-`;
+import { MainWrapper, Title } from '../theme';
 
 const Description = styled.p`
   margin: 0 0 6px;
@@ -127,7 +110,7 @@ const MarginForm = () => {
 
   return (
     <MainWrapper>
-      <Title>Order form</Title>
+      <Title>Order Form</Title>
       <Description>Select how much you can lose:</Description>
       <SimpleBar style={{ maxHeight: '105px' }}>
         {Object.keys(RISK_OPTIONS).map((key, index) => {

@@ -38,6 +38,17 @@ import Root from './injected/Root';
 
   const customStyle = document.createElement('style');
   customStyle.textContent = `
+    .injected_by_extension input[type=radio] {   
+      margin-right: 4px;
+      position: relative;
+      top: 1px;
+    }
+
+    .injected_by_extension input[type=radio], 
+    .injected_by_extension input[type=radio] + label {   
+      cursor: pointer;
+    }
+
     .noUi-horizontal .noUi-handle {
       width: 18px;
     }
@@ -56,8 +67,9 @@ import Root from './injected/Root';
     }
 
     .custom-tooltip {
-      font-size: 12px;
-      padding: 2px;
+      font-size: 11px;
+      line-height: 10px;
+      padding: 3px 2px 0px;
     }
 
     .custom-tooltip-title {

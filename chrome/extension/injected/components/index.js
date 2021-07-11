@@ -6,6 +6,7 @@ import LastChanges from './LastChanges';
 import Statistics from './Statistics';
 import PanelHeader from './PanelHeader';
 import StartTradeDayPopup from './StartTradeDayPopup';
+import TickersStatus from './TickersStatus';
 
 export {
   BalanceChart,
@@ -16,4 +17,5 @@ export {
   Statistics,
   PanelHeader,
   StartTradeDayPopup,
+  TickersStatus,
 };
