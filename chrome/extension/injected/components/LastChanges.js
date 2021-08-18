@@ -124,6 +124,9 @@ const LastChanges = () => {
     const transferModifiers = {
       '30.05.2021': -263,
       '14.06.2021': -584,
+      '7.07.2021': -50,
+      '8.07.2021': -100,
+      '21.07.2021': -15,
     };
 
     Object.keys(transferModifiers).map((date) => {
@@ -178,7 +181,7 @@ const LastChanges = () => {
           {lastChangeType === 'Transfers' ? '$' : '%'}
         </TotalPLPerc>
       </Title>
-      <SimpleBar style={{ maxHeight: '205px' }}>
+      <SimpleBar style={{ maxHeight: '205px', fontSize: '13px' }}>
         {lastChanges.map((data, index) => {
           const { value, timestamp } = data;
           const nextValue = lastChanges[index + 1]
