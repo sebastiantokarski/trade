@@ -3,7 +3,7 @@ import { useTimer } from 'use-timer';
 import styled from 'styled-components';
 import { formatTime, getTodayDate } from '../utils';
 import { STORAGE_TS } from '../../config';
-import { clearStorage, getStorageData, setStorageData } from '../storage';
+import { getStorageData, setStorageData } from '../storage';
 
 const StatisticsWrapper = styled.div`
   display: flex;

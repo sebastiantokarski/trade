@@ -55,9 +55,15 @@ export const retrievePositions = async () => {
   }
 };
 
-export const getLedgersHistory = async (limit) => {
+export const getLedgersHistory = async (query) => {
   try {
-    const ledgersResponse = await fetchData('v2/auth/r/ledgers/hist', { limit });
+    const { category, start, end, limit } = query;
+    const ledgersResponse = await fetchData('v2/auth/r/ledgers/hist', {
+      category,
+      start,
+      end,
+      limit,
+    });
 
     return ledgersResponse.map((ledger) => ({
       id: ledger[0],
@@ -101,7 +107,7 @@ export const submitMarketOrder = async (amount) => {
     await fetchData('v2/auth/w/order/submit', {
       type: 'MARKET',
       symbol: getSymbolFromUrl(),
-      amount: amount.toFixed(3),
+      amount: amount.toFixed(4),
     });
   } catch (ex) {
     log('error', 'FAILED TO SUBMIT MARKET ORDER', ex);

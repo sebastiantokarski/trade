@@ -41,9 +41,11 @@ export const timeSince = (timestamp) => {
   return `${Math.round(elapsed / msPerYear)} years ago`;
 };
 
-export const getSymbolFromUrl = () => {
-  return window.location.pathname.replace(/\/|:/g, '').replace('DOGEUSD', 'DOGE:USD');
-};
+export const getSymbolFromUrl = () =>
+  window.location.pathname
+    .replace(/\/|:/g, '')
+    .replace('DOGEUSD', 'DOGE:USD')
+    .replace('AVAXUSD', 'AVAX:USD');
 
 export const getTodayMidnightTime = () => {
   const todayMidnight = new Date();

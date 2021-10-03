@@ -63,7 +63,9 @@ import Root from './injected/Root';
 
     .noUi-tooltip {
       padding: 0;
-      bottom: unset !important;
+      bottom: 40% !important;
+      min-height: 26px;
+      z-index: 999;
     }
 
     .custom-tooltip {

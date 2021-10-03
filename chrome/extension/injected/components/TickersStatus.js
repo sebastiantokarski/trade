@@ -93,7 +93,7 @@ const TickersStatus = () => {
           <BlockText>30m</BlockText>
           <BlockText>10m</BlockText>
         </div>
-        {Object.keys(tickersHistory).map((symbol) => {
+        {Object.keys(tickersHistory).map((symbol, index) => {
           const ticker = tickersHistory[symbol];
           const { current, tenMinutes, thirtyMinutes, fourHours } = ticker;
           const tenMinutesChange = (((tenMinutes - current) / current) * -100).toFixed(2);
@@ -101,7 +101,7 @@ const TickersStatus = () => {
           const fourHoursChange = (((fourHours - current) / current) * -100).toFixed(2);
 
           return (
-            <div style={{ fontSize: '13px' }}>
+            <div key={`${index}_ticker`} style={{ fontSize: '13px' }}>
               <BlockTokenText>{symbol.replace('t', '').replace('USD', '')}</BlockTokenText>
               <BlockText className={fourHoursChange > 0 ? 'bfx-green-text' : 'bfx-red-text'}>
                 {fourHoursChange} %

@@ -21,11 +21,18 @@ const AppWrapper = styled.div`
 const ContentWrapper = styled.div`
   display: flex;
   height: 280px;
-  padding: 10px;
+  padding: 10px 0 0;
 `;
 const ContentContainer = styled.div`
   padding: 10px;
   width: ${(props) => props.width};
+`;
+
+const ChartContainer = styled.div`
+  width: 80%;
+  margin: 0 auto;
+  text-align: center;
+  padding-bottom: 30px;
 `;
 
 const App = () => {
@@ -77,20 +84,22 @@ const App = () => {
     <AppWrapper className="injected_by_extension">
       <PanelHeader />
       <ContentWrapper>
-        <ContentContainer width={'25%'}>
+        <ContentContainer width={'33%'}>
           <MarginForm />
         </ContentContainer>
-        <ContentContainer width={'25%'}>
-          <BalanceChart />
+        {/* <ContentContainer width={'25%'}>
           <Statistics />
-        </ContentContainer>
-        <ContentContainer width={'25%'}>
+        </ContentContainer> */}
+        <ContentContainer width={'33%'}>
           <LastChanges />
         </ContentContainer>
-        <ContentContainer width={'25%'}>
+        <ContentContainer width={'33%'}>
           <TickersStatus />
         </ContentContainer>
       </ContentWrapper>
+      <ChartContainer>
+        <BalanceChart />
+      </ChartContainer>
       <StartTradeDayPopup />
     </AppWrapper>
   );

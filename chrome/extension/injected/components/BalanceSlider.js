@@ -30,7 +30,7 @@ const BalanceSlider = () => {
     const currTooltip = document.querySelector('.custom-tooltip-curr');
 
     if (currTooltip) {
-      currTooltip.parentNode.style.cssText = 'bottom: 100% !important';
+      currTooltip.parentNode.style.cssText = 'top: 50% !important';
     }
   }, [plValue]);
 
