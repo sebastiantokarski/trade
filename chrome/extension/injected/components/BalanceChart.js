@@ -23,7 +23,8 @@ const chartPeriods = ['Day', 'Week', 'Month', 'Year', 'Max'];
 
 const BalanceChart = () => {
   const [chartPeriod, setChartPeriod] = useState(chartPeriods[0]);
-  const { posLedgers } = useSelector((state) => state.account);
+
+  const { posLedgers, currBalance } = useSelector((state) => state.account);
 
   const filterByPeriod = (timestamp) => {
     const today = new Date();
@@ -54,10 +55,10 @@ const BalanceChart = () => {
         .filter((ledger) => filterByPeriod(ledger.timestamp))
         .map((ledger) => ({ x: ledger.timestamp, y: ledger.balance }));
 
-      // chartData.push({
-      //   x: chartData.length,
-      //   y: currDayBalance,
-      // });
+      chartData.unshift({
+        x: new Date().getTime(),
+        y: currBalance,
+      });
 
       return chartData.reverse();
     } catch (ex) {
