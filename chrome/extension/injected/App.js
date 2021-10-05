@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import Chart from 'chart.js';
+import * as ChartAnnotation from 'chartjs-plugin-annotation';
 import {
   BalanceChart,
   PanelHeader,
@@ -13,6 +15,8 @@ import {
 import { startObservingPosition } from './redux/slices/positionSlice';
 import { fetchPageInfo } from './redux/slices/pageInfoSlice';
 import { WARNING_MODE_CLASS } from '../config';
+
+Chart.plugins.register([ChartAnnotation]);
 
 const AppWrapper = styled.div`
   overflow: visible !important;

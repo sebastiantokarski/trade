@@ -104,13 +104,13 @@ const TickersStatus = () => {
             <div key={`${index}_ticker`} style={{ fontSize: '13px' }}>
               <BlockTokenText>{symbol.replace('t', '').replace('USD', '')}</BlockTokenText>
               <BlockText className={fourHoursChange > 0 ? 'bfx-green-text' : 'bfx-red-text'}>
-                {fourHoursChange} %
+                {isNaN(fourHoursChange) ? '-' : `${fourHoursChange} %`}
               </BlockText>
               <BlockText className={thirtyMinutesChange > 0 ? 'bfx-green-text' : 'bfx-red-text'}>
-                {thirtyMinutesChange} %
+                {isNaN(thirtyMinutesChange) ? '-' : `${thirtyMinutesChange} %`}
               </BlockText>
               <BlockText className={tenMinutesChange > 0 ? 'bfx-green-text' : 'bfx-red-text'}>
-                {tenMinutesChange} %
+                {isNaN(tenMinutesChange) ? '-' : `${tenMinutesChange} %`}
               </BlockText>
             </div>
           );

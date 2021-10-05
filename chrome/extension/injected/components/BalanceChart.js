@@ -25,7 +25,9 @@ const BalanceChart = () => {
   const [chartPeriod, setChartPeriod] = useState(chartPeriods[0]);
 
   const { plValue, isActive: isPositionActive } = useSelector((state) => state.position);
-  const { posLedgers, currDayBalance, currBalance } = useSelector((state) => state.account);
+  const { posLedgers, currDayBalance, currBalance, minBalance } = useSelector(
+    (state) => state.account
+  );
 
   const currActiveBalance = currBalance + plValue;
 
@@ -76,16 +78,34 @@ const BalanceChart = () => {
     }
   };
 
+  const getLabels = (chartData) => {
+    if (chartPeriod === 'Day') {
+      return chartData.map((data) => new Date(data.x).toISOString().slice(11, 16));
+    } else if (chartPeriod === 'Week') {
+      return chartData.map((data) =>
+        new Date(data.x).toLocaleDateString('en-En', { weekday: 'long' })
+      );
+    } else if (chartPeriod === 'Month') {
+      return chartData.map((data) => new Date(data.x).toISOString().slice(8, 10));
+    }
+
+    return chartData.map((data) => new Date(data.x).toISOString().slice(0, 10));
+  };
+
+  const chartData = getChartData();
+
   return (
     <ChartWrapper>
       <div>
         {chartPeriods.map((period) => (
-          <DateBtn onClick={() => setChartPeriod(period)}>{period}</DateBtn>
+          <DateBtn key={`period-type-${period}`} onClick={() => setChartPeriod(period)}>
+            {period}
+          </DateBtn>
         ))}
       </div>
       <Line
         data={{
-          labels: Array.from(Array(getChartData().length).keys()).reverse(),
+          labels: getLabels(chartData),
           datasets: [
             {
               label: 'Balance',
@@ -93,7 +113,7 @@ const BalanceChart = () => {
               pointRadius: 0,
               borderWidth: 2,
               borderColor: '#42A5F5',
-              data: getChartData(),
+              data: chartData,
             },
           ],
         }}
@@ -111,20 +131,73 @@ const BalanceChart = () => {
           hover: {
             mode: 'label',
           },
+          tooltips: {
+            mode: 'x-axis',
+            callbacks: {
+              label: (tooltipItems) => {
+                return `Balance: $${tooltipItems.yLabel.toFixed(2)}`;
+              },
+            },
+          },
           xAxes: [
             {
               type: 'time',
               time: {
-                format: 'DD/MM/YYYY',
-                tooltipFormat: 'DD T',
-                unit: 'hour',
-              },
-              scaleLabel: {
-                display: true,
-                labelString: 'Data',
+                displayFormats: {
+                  millisecond: 'MMM DD',
+                  second: 'MMM DD',
+                  minute: 'MMM DD',
+                  hour: 'MMM DD',
+                  day: 'MMM DD',
+                  week: 'MMM DD',
+                  month: 'MMM DD',
+                  quarter: 'MMM DD',
+                  year: 'MMM DD',
+                },
               },
             },
           ],
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+          annotation: {
+            annotations: [
+              {
+                type: 'line',
+                mode: 'horizontal',
+                scaleID: 'y-axis-0',
+                value: 150, // @TODO from variable
+                borderColor: 'red',
+                borderWidth: 1,
+                label: {
+                  content: 'Absolute minimum',
+                  backgroundColor: 'rgba(0,0,0,0.15)',
+                  color: 'rgb(255, 0, 0)',
+                  position: 'top',
+                  textAlign: 'end',
+                  enabled: true,
+                },
+              },
+              {
+                type: 'line',
+                mode: 'horizontal',
+                scaleID: 'y-axis-0',
+                value: minBalance,
+                borderColor: 'red',
+                borderWidth: 1,
+                label: {
+                  content: 'Today minimum',
+                  backgroundColor: 'rgba(0,0,0,0.15)',
+                  color: 'rgb(255, 0, 0)',
+                  position: 'top',
+                  textAlign: 'end',
+                  enabled: true,
+                },
+              },
+            ],
+          },
         }}
       />
     </ChartWrapper>
