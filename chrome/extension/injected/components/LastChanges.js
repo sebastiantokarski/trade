@@ -13,13 +13,13 @@ import { MainWrapper, Title, TitleBtn } from '../theme';
 
 const Timestamp = styled.span`
   display: inline-block;
-  min-width: 105px;
+  width: 50%;
 `;
 
 const ChangeValue = styled.span`
   display: inline-block;
-  margin: 0.1rem 1rem;
-  min-width: 4.5rem;
+  margin: 0.1rem 1%;
+  width: 23%;
 `;
 
 const TotalPLPerc = styled.span`

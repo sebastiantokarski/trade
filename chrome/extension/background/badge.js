@@ -61,10 +61,9 @@ chrome.tabs.onRemoved.addListener(() => {
   });
 });
 
-setInterval(() => {
-  const currTimestamp = new Date().getTime();
-
-  if (lastUpdateTimestamp && currTimestamp - lastUpdateTimestamp > CHECK_BADGE_INTERVAL) {
-    setDefaultBadge();
-  }
-}, CHECK_BADGE_INTERVAL);
+// setInterval(() => {
+//   const currTimestamp = new Date().getTime();
+//   if (lastUpdateTimestamp && currTimestamp - lastUpdateTimestamp > CHECK_BADGE_INTERVAL) {
+//     setDefaultBadge();
+//   }
+// }, CHECK_BADGE_INTERVAL);

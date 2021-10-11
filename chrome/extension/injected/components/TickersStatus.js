@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import SimpleBar from 'simplebar-react';
 import styled from 'styled-components';
 import { useInterval } from '../hooks';
@@ -8,20 +7,13 @@ import { getData } from '../utils';
 import { TICKERS_STATUS_INTERVAL } from '../../config';
 
 const BlockText = styled.span`
-  width: 55px;
   display: inline-block;
+  width: 25%;
   text-align: center;
-`;
-
-const BlockTokenText = styled.span`
-  display: inline-block;
-  width: 40px;
 `;
 
 const TickersStatus = () => {
   const refreshTime = TICKERS_STATUS_INTERVAL / 1000;
-
-  const { tickers } = useSelector((state) => state.pageInfo);
 
   const [tickersHistory, setTickersHistory] = useState({});
   const [timeToRefresh, setTimeToRefresh] = useState(refreshTime);
@@ -31,43 +23,41 @@ const TickersStatus = () => {
   }, 1000);
 
   useInterval(async () => {
+    const tickersNodes = document.querySelectorAll(
+      '.tickerlist__container [aria-label=row] .tickerlist__symbolcell'
+    );
     const updatedTickersHistory = {};
 
     const setTickerPrice = (ticker, propName) => {
-      const symbol = ticker[0];
+      const symbol = ticker[0].replace(/^t|USD/g, '');
       const avgPrice = (ticker[1] + ticker[3]) / 2;
 
       updatedTickersHistory[symbol] = updatedTickersHistory[symbol] || {};
       updatedTickersHistory[symbol][propName] = avgPrice;
     };
 
-    if (tickers.length) {
-      const tickersSymbols = tickers.join(',').replace(/:/g, '');
+    if (tickersNodes.length) {
+      const symbols = [...tickersNodes].map((node) => node.pathname.replace(/\/|:/g, '')).join(',');
+
       const currTime = new Date().getTime();
       const tenSeconds = 10000;
-      const tenMinutesEarlier = currTime - 1000 * 60 * 10;
-      const thirtyMinutesEarlier = currTime - 1000 * 60 * 30;
-      const fourHoursEarlier = currTime - 1000 * 60 * 240;
+      const earlier10m = currTime - 1000 * 60 * 10;
+      const earlier30m = currTime - 1000 * 60 * 30;
+      const earlier4h = currTime - 1000 * 60 * 240;
 
       const tickersCurrResp = await getData(
-        `/v2/tickers/hist?symbols=${tickersSymbols}&start=${currTime - tenSeconds}`
+        `/v2/tickers/hist?symbols=${symbols}&start=${currTime - tenSeconds}`
       );
       const tickersCurrResp1 = await getData(
-        `/v2/tickers/hist?symbols=${tickersSymbols}&start=${tenMinutesEarlier}&end=${
-          tenMinutesEarlier + tenSeconds
-        }`
+        `/v2/tickers/hist?symbols=${symbols}&start=${earlier10m}&end=${earlier10m + tenSeconds}`
       );
 
       const tickersCurrResp2 = await getData(
-        `/v2/tickers/hist?symbols=${tickersSymbols}&start=${thirtyMinutesEarlier}&end=${
-          thirtyMinutesEarlier + tenSeconds
-        }`
+        `/v2/tickers/hist?symbols=${symbols}&start=${earlier30m}&end=${earlier30m + tenSeconds}`
       );
 
       const tickersCurrResp3 = await getData(
-        `/v2/tickers/hist?symbols=${tickersSymbols}&start=${fourHoursEarlier}&end=${
-          fourHoursEarlier + tenSeconds
-        }`
+        `/v2/tickers/hist?symbols=${symbols}&start=${earlier4h}&end=${earlier4h + tenSeconds}`
       );
 
       if (tickersCurrResp.length) {
@@ -88,33 +78,35 @@ const TickersStatus = () => {
       </Title>
       <SimpleBar style={{ maxHeight: '205px' }}>
         <div style={{ fontSize: '13px' }}>
-          <BlockTokenText>Token</BlockTokenText>
+          <BlockText>Token</BlockText>
           <BlockText>4h</BlockText>
           <BlockText>30m</BlockText>
           <BlockText>10m</BlockText>
         </div>
-        {Object.keys(tickersHistory).map((symbol, index) => {
-          const ticker = tickersHistory[symbol];
-          const { current, tenMinutes, thirtyMinutes, fourHours } = ticker;
-          const tenMinutesChange = (((tenMinutes - current) / current) * -100).toFixed(2);
-          const thirtyMinutesChange = (((thirtyMinutes - current) / current) * -100).toFixed(2);
-          const fourHoursChange = (((fourHours - current) / current) * -100).toFixed(2);
+        {Object.keys(tickersHistory)
+          .sort((a, b) => a.localeCompare(b))
+          .map((symbol, index) => {
+            const ticker = tickersHistory[symbol];
+            const { current, tenMinutes, thirtyMinutes, fourHours } = ticker;
+            const tenMinutesChange = (((tenMinutes - current) / current) * -100).toFixed(2);
+            const thirtyMinutesChange = (((thirtyMinutes - current) / current) * -100).toFixed(2);
+            const fourHoursChange = (((fourHours - current) / current) * -100).toFixed(2);
 
-          return (
-            <div key={`${index}_ticker`} style={{ fontSize: '13px' }}>
-              <BlockTokenText>{symbol.replace('t', '').replace('USD', '')}</BlockTokenText>
-              <BlockText className={fourHoursChange > 0 ? 'bfx-green-text' : 'bfx-red-text'}>
-                {isNaN(fourHoursChange) ? '-' : `${fourHoursChange} %`}
-              </BlockText>
-              <BlockText className={thirtyMinutesChange > 0 ? 'bfx-green-text' : 'bfx-red-text'}>
-                {isNaN(thirtyMinutesChange) ? '-' : `${thirtyMinutesChange} %`}
-              </BlockText>
-              <BlockText className={tenMinutesChange > 0 ? 'bfx-green-text' : 'bfx-red-text'}>
-                {isNaN(tenMinutesChange) ? '-' : `${tenMinutesChange} %`}
-              </BlockText>
-            </div>
-          );
-        })}
+            return (
+              <div key={`${index}_ticker`} style={{ fontSize: '13px' }}>
+                <BlockText>{symbol}</BlockText>
+                <BlockText className={fourHoursChange > 0 ? 'bfx-green-text' : 'bfx-red-text'}>
+                  {isNaN(fourHoursChange) ? '-' : `${fourHoursChange} %`}
+                </BlockText>
+                <BlockText className={thirtyMinutesChange > 0 ? 'bfx-green-text' : 'bfx-red-text'}>
+                  {isNaN(thirtyMinutesChange) ? '-' : `${thirtyMinutesChange} %`}
+                </BlockText>
+                <BlockText className={tenMinutesChange > 0 ? 'bfx-green-text' : 'bfx-red-text'}>
+                  {isNaN(tenMinutesChange) ? '-' : `${tenMinutesChange} %`}
+                </BlockText>
+              </div>
+            );
+          })}
       </SimpleBar>
     </MainWrapper>
   );
