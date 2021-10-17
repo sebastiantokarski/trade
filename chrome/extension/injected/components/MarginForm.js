@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import SimpleBar from 'simplebar-react';
@@ -50,6 +50,7 @@ const MarginForm = () => {
 
   const { currBalance } = useSelector((state) => state.account);
   const { isActive, plValue } = useSelector((state) => state.position);
+  const { leverage } = useSelector((state) => state.pageInfo);
 
   const blockMarginActions = false; // currBalance < minBalance;
 
@@ -84,7 +85,7 @@ const MarginForm = () => {
     if (positions[0]) {
       const { amount, price } = positions[0];
 
-      await createStopOrder(type, amount, price, risk);
+      await createStopOrder(type, amount, price, risk, leverage);
     }
   };
 

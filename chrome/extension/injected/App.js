@@ -13,7 +13,7 @@ import {
   TickersStatus,
 } from './components';
 import { startObservingPosition } from './redux/slices/positionSlice';
-import { fetchPageInfo } from './redux/slices/pageInfoSlice';
+import { fetchPageInfo, observeCurrToken } from './redux/slices/pageInfoSlice';
 import { WARNING_MODE_CLASS } from '../config';
 
 Chart.plugins.register([ChartAnnotation]);
@@ -33,10 +33,10 @@ const ContentContainer = styled.div`
 `;
 
 const ChartContainer = styled.div`
-  width: 80%;
+  width: 95%;
   margin: 0 auto;
   text-align: center;
-  padding-bottom: 30px;
+  padding-bottom: 35px;
 `;
 
 const App = () => {
@@ -49,6 +49,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(fetchPageInfo());
+    dispatch(observeCurrToken());
     dispatch(startObservingPosition());
   }, [dispatch]);
 

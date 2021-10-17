@@ -102,6 +102,10 @@ import Root from './injected/Root';
     .popup-overlay {
       background: #1b262d;
     }
+
+    .tickerlist__container .custom-scrollbar {
+      height: 430px !important;
+    }
   `;
   document.head.appendChild(customStyle);
 })();

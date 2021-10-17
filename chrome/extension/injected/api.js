@@ -114,13 +114,13 @@ export const submitMarketOrder = async (amount) => {
   }
 };
 
-export const createStopOrder = async (type, amount, price, risk) => {
+export const createStopOrder = async (type, amount, price, risk, leverage) => {
   try {
     await fetchData('v2/auth/w/order/submit', {
       type: 'STOP',
       symbol: getSymbolFromUrl(),
       amount: (amount * -1).toString(),
-      price: manageRisk(type, price, risk).toFixed(4),
+      price: manageRisk(type, price, risk, leverage).toFixed(4),
     });
   } catch (ex) {
     log('error', 'FAILED TO CREATE STOP ORDER', ex);

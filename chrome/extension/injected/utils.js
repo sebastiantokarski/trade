@@ -118,11 +118,10 @@ export const getData = async (pathParams) => {
   return response;
 };
 
-export const manageRisk = (type, price, risk) => {
+export const manageRisk = (type, price, risk, leverage) => {
   const riskValue = RISK_OPTIONS[risk].value;
+  // @TODO fee depends on leverage
   const feeInPerc = 0.021;
-  // @TODO
-  const leverage = 5;
 
   if (type === 'buy') {
     return price * (1 - (riskValue - feeInPerc) / leverage);
@@ -147,4 +146,12 @@ export const getDateFromString = (date) => {
 
 export const isDiffBiggerThanOneDay = (date1, date2) => {
   return Math.abs(date1 - date2) > MS_PER_DAY;
+};
+
+export const onWindowLoad = (cb, dispatch) => {
+  const withDispatch = () => dispatch(cb());
+
+  if (document.readyState === 'complete') {
+    withDispatch();
+  } else window.addEventListener('load', withDispatch);
 };
