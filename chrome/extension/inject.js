@@ -104,7 +104,7 @@ import Root from './injected/Root';
     }
 
     .tickerlist__container .custom-scrollbar {
-      height: 430px !important;
+      min-height: 430px !important;
     }
   `;
   document.head.appendChild(customStyle);

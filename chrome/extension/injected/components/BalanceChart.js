@@ -168,7 +168,7 @@ const BalanceChart = () => {
                 type: 'line',
                 mode: 'horizontal',
                 scaleID: 'y-axis-0',
-                value: 150, // @TODO from variable
+                value: 300, // @TODO from variable
                 borderColor: 'red',
                 borderWidth: 1,
                 label: {
