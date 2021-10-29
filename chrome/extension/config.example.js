@@ -27,13 +27,13 @@ export const CHECK_BADGE_INTERVAL = 60000;
 export const TICKERS_STATUS_INTERVAL = 30000;
 
 export const RISK_OPTIONS = {
-  min_profit: { name: 'min_profit', value: -0.03, label: 'Minimal profit' },
-  no_risk: { name: 'no_risk', value: 0.0, label: 'No risk' },
-  minimal: { name: 'minimal', value: 0.03, label: 'Minimal risk' },
-  standard: { name: 'standard', value: 0.06, label: 'Standard risk' },
-  high: { name: 'high', value: 0.09, label: 'High risk' },
-  very_high: { name: 'very_high', value: 0.12, label: 'Very high risk' },
-  maximum: { name: 'maximum', value: 0.15, label: 'Maximum risk' },
+  min_profit: { name: 'min_profit', perc: 3, label: 'Minimal profit' },
+  no_risk: { name: 'no_risk', perc: 0, label: 'No risk' },
+  minimal: { name: 'minimal', perc: -3, label: 'Minimal risk' },
+  standard: { name: 'standard', perc: -6, label: 'Standard risk' },
+  high: { name: 'high', perc: -9, label: 'High risk' },
+  very_high: { name: 'very_high', perc: -12, label: 'Very high risk' },
+  maximum: { name: 'liquidation', perc: -15, label: 'Liquidation' },
 };
 
 export const WARNING_MODE_CLASS = 'warning-mode';

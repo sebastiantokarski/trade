@@ -3,7 +3,7 @@ import Popup from 'reactjs-popup';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { clearStorage, getStorageData } from '../storage';
-import { STORAGE_STR, TEXT_1, TEXT_2 } from '../../config';
+import { STORAGE_STR, TEXT_1, TEXT_2, TEXT_3, TEXT_4 } from '../../config';
 
 const PopupContent = styled.div`
   background-color: rgba(255, 255, 255, 0.25);
@@ -28,7 +28,6 @@ const StartTradeDayPopup = () => {
   const { currBalance } = useSelector((state) => state.account);
 
   useEffect(async () => {
-    await clearStorage();
     const data = await getStorageData(STORAGE_STR);
 
     if (!data || (data && !data[new Date().toLocaleDateString()])) {
@@ -47,10 +46,10 @@ const StartTradeDayPopup = () => {
         <PopupTitle>{TEXT_1}</PopupTitle>
         <p>{TEXT_2}</p>
         <div>
-          Your current balance: <b>{currBalance && currBalance.toFixed(2)}$</b>
+          {TEXT_4}: <b>{currBalance && currBalance.toFixed(2)}$</b>
         </div>
         <div>
-          Give definitely the lowest acceptable balance:{' '}
+          <span>{TEXT_3}</span>
           <Input type="number" className="ui-labeledinput__input" />
         </div>
         <button type="button" className="ui-button" onClick={closeModal}>

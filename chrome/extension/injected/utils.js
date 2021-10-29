@@ -45,7 +45,8 @@ export const getSymbolFromUrl = () =>
   window.location.pathname
     .replace(/\/|:/g, '')
     .replace('DOGEUSD', 'DOGE:USD')
-    .replace('AVAXUSD', 'AVAX:USD');
+    .replace('AVAXUSD', 'AVAX:USD')
+    .replace('MATICUSD', 'MATIC:USD');
 
 export const getTodayMidnightTime = () => {
   const todayMidnight = new Date();
@@ -119,14 +120,13 @@ export const getData = async (pathParams) => {
 };
 
 export const manageRisk = (type, price, risk, leverage) => {
-  const riskValue = RISK_OPTIONS[risk].value;
-  // @TODO fee depends on leverage
-  const feeInPerc = 0.021;
+  const riskValue = RISK_OPTIONS[risk].perc / 100;
+  const totalPerc = riskValue / leverage;
 
   if (type === 'buy') {
-    return price * (1 - (riskValue - feeInPerc) / leverage);
+    return price * (1 + totalPerc);
   } else if (type === 'sell') {
-    return price * (1 + (riskValue - feeInPerc) / leverage);
+    return price * (1 - totalPerc);
   }
 };
 

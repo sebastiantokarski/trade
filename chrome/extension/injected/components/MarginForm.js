@@ -99,13 +99,14 @@ const MarginForm = () => {
     const positions = await retrievePositions();
 
     if (positions[0]) {
-      const { amount, pl } = positions[0];
+      const { amount } = positions[0];
 
       await submitMarketOrder(amount * -1);
 
-      if (pl > 0) {
-        await transferUSDToExchangeWallet(pl * 0.15);
-      }
+      // @TODO transfer only on demand
+      // if (pl > 0) {
+      //   await transferUSDToExchangeWallet(pl * 0.15);
+      // }
     }
   };
 
@@ -114,19 +115,14 @@ const MarginForm = () => {
       <Title>Order Form</Title>
       <Description>Select how much you can lose:</Description>
       <SimpleBar style={{ maxHeight: '105px' }}>
-        {Object.keys(RISK_OPTIONS).map((key, index) => {
-          const { name, label } = RISK_OPTIONS[key];
-
-          return (
-            <RiskOption
-              key={index}
-              value={name}
-              label={label}
-              onChange={handleRiskChange}
-              currBalance={currBalance}
-            />
-          );
-        })}
+        {Object.keys(RISK_OPTIONS).map((key, index) => (
+          <RiskOption
+            key={index}
+            option={RISK_OPTIONS[key]}
+            onChange={handleRiskChange}
+            currBalance={currBalance}
+          />
+        ))}
       </SimpleBar>
       <div className="orderform__actions">
         <MarginActionBtn
