@@ -149,7 +149,7 @@ export const isDiffBiggerThanOneDay = (date1, date2) => {
 };
 
 export const onWindowLoad = (cb, dispatch) => {
-  const withDispatch = () => dispatch(cb());
+  const withDispatch = () => (dispatch ? dispatch(cb()) : cb);
 
   if (document.readyState === 'complete') {
     withDispatch();

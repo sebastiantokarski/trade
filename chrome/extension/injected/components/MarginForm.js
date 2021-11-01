@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import SimpleBar from 'simplebar-react';
@@ -6,6 +6,7 @@ import { fetchData } from '../utils';
 import {
   getMarginInfo,
   retrievePositions,
+  retrieveOrders,
   submitMarketOrder,
   createStopOrder,
   transferUSDToExchangeWallet,
@@ -50,9 +51,21 @@ const MarginForm = () => {
 
   const { currBalance } = useSelector((state) => state.account);
   const { isActive, plValue } = useSelector((state) => state.position);
-  const { leverage } = useSelector((state) => state.pageInfo);
+  const { leverage, symbol } = useSelector((state) => state.pageInfo);
 
   const blockMarginActions = false; // currBalance < minBalance;
+
+  useEffect(async () => {
+    const orders = await retrieveOrders();
+
+    if (!orders.length) return;
+
+    const order = orders[0];
+
+    if (order.type === 'STOP' && order.symbol === symbol) {
+      console.log(order);
+    }
+  }, [symbol, retrieveOrders]);
 
   const cancelStopOrder = async () => {
     const ordersResponse = await fetchData('v2/auth/r/orders');

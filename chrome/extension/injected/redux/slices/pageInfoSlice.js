@@ -1,19 +1,24 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { getSymbolFromUrl } from '../../utils';
 
 const initialState = {
   leverage: 1,
+  symbol: '',
   tickers: [],
 };
 
-const pageInfo = createSlice({
+const slice = createSlice({
   name: 'pageInfo',
   initialState,
   reducers: {
-    getInfoFromPage(state, action) {
+    getTickers(state) {
       const tickers = document.querySelectorAll(
         '.tickerlist__container [aria-label=row] .tickerlist__symbolcell'
       );
       state.tickers = [...tickers].map((node) => node.pathname.replace(/\//g, ''));
+    },
+    updateSymbol(state, action) {
+      state.symbol = action.payload;
     },
     setCurrLeverage(state, action) {
       const currToken = action.payload;
@@ -39,15 +44,11 @@ const pageInfo = createSlice({
   },
 });
 
-export const { getInfoFromPage, setCurrLeverage } = pageInfo.actions;
+export const { getTickers, updateSymbol, setCurrLeverage } = slice.actions;
 
-export default pageInfo.reducer;
+export default slice.reducer;
 
-export const fetchPageInfo = () => async (dispatch) => {
-  dispatch(getInfoFromPage());
-};
-
-export const observeCurrToken = () => async (dispatch) => {
+export const observeCurrToken = () => async (dispatch, getState) => {
   const mainTickerWrapper = document.querySelector('.main-ticker__wrapper');
   const config = {
     childList: true,
@@ -62,10 +63,28 @@ export const observeCurrToken = () => async (dispatch) => {
     }
   };
 
-  const observer = new MutationObserver(handleMainTickerChange);
+  const handleSymbolChange = () => {
+    const { symbol } = getState().pageInfo;
+    const currSymbol = getSymbolFromUrl();
+
+    if (symbol !== currSymbol) {
+      dispatch(updateSymbol(currSymbol));
+    }
+  };
+
+  const handleChange = () => {
+    handleMainTickerChange();
+    handleSymbolChange();
+  };
+
+  const observer = new MutationObserver(handleChange);
 
   if (mainTickerWrapper) {
     observer.observe(mainTickerWrapper, config);
-    handleMainTickerChange();
+    handleChange();
   }
+};
+export const fetchPageInfo = () => async (dispatch) => {
+  dispatch(getTickers());
+  dispatch(observeCurrToken());
 };

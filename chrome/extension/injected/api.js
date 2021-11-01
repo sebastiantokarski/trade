@@ -55,6 +55,37 @@ export const retrievePositions = async () => {
   }
 };
 
+export const retrieveOrders = async () => {
+  try {
+    const ordersResponse = await fetchData('v2/auth/r/orders');
+
+    return ordersResponse.map((order) => ({
+      id: order[0],
+      gid: order[1],
+      cid: order[2],
+      symbol: order[3],
+      mts_create: order[4],
+      mts_update: order[5],
+      amount: order[6],
+      amount_orig: order[7],
+      type: order[8],
+      type_prev: order[9],
+      flags: order[12],
+      status: order[13],
+      price: order[16],
+      price_avg: order[17],
+      price_trailing: order[18],
+      price_aux_limit: order[19],
+      hidden: order[23],
+      placed_id: order[24],
+      routing: order[28],
+      meta: order[31],
+    }));
+  } catch (ex) {
+    log('error', 'FAILED TO RETRIEVE ORDERS', ex);
+  }
+};
+
 export const getLedgersHistory = async (query) => {
   try {
     const { category, start, end, limit } = query;

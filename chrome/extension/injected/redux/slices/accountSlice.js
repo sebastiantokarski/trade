@@ -19,7 +19,7 @@ const initialState = {
   performDataSuccess: false,
 };
 
-const account = createSlice({
+const slice = createSlice({
   name: 'account',
   initialState,
   reducers: {
@@ -60,9 +60,9 @@ const account = createSlice({
   },
 });
 
-export const { setLedgers, setWallet, performData } = account.actions;
+export const { setLedgers, setWallet, performData } = slice.actions;
 
-export default account.reducer;
+export default slice.reducer;
 
 export const fetchLedgers = () => async (dispatch) => {
   const ledgers = await getLedgersHistory({ limit: LEDGERS_HISTORY_LIMIT });

@@ -12,8 +12,8 @@ import {
   StartTradeDayPopup,
   TickersStatus,
 } from './components';
-import { startObservingPosition } from './redux/slices/positionSlice';
-import { fetchPageInfo, observeCurrToken } from './redux/slices/pageInfoSlice';
+import { startObservingPosition, stopObservingPosition } from './redux/slices/positionSlice';
+import { fetchPageInfo } from './redux/slices/pageInfoSlice';
 import { WARNING_MODE_CLASS } from '../config';
 
 Chart.plugins.register([ChartAnnotation]);
@@ -49,8 +49,9 @@ const App = () => {
 
   useEffect(() => {
     dispatch(fetchPageInfo());
-    dispatch(observeCurrToken());
     dispatch(startObservingPosition());
+
+    return stopObservingPosition;
   }, [dispatch]);
 
   useEffect(() => {
@@ -63,6 +64,8 @@ const App = () => {
     } else if (warningMode && currBalance > minBalance) {
       setWarningMode(false);
     }
+
+    return () => setWarningMode(false);
   }, [currBalance]);
 
   useEffect(() => {

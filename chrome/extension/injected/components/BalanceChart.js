@@ -31,6 +31,25 @@ const BalanceChart = () => {
 
   const currActiveBalance = currBalance + plValue;
 
+  const createAnnotation = (value, content) => {
+    return {
+      type: 'line',
+      mode: 'horizontal',
+      scaleID: 'y-axis-0',
+      value,
+      borderColor: 'red',
+      borderWidth: 1,
+      label: {
+        content,
+        backgroundColor: 'rgba(0,0,0,0.15)',
+        color: 'rgb(255, 0, 0)',
+        position: 'top',
+        textAlign: 'end',
+        enabled: true,
+      },
+    };
+  };
+
   const filterByPeriod = (timestamp) => {
     const today = new Date();
 
@@ -93,6 +112,12 @@ const BalanceChart = () => {
   };
 
   const chartData = getChartData();
+  const annotations = [createAnnotation(minBalance, 'Today minimum')];
+
+  if (chartPeriod !== 'Day') {
+    // @TODO From variable
+    annotations.push(createAnnotation(300, 'Absolute minimum'));
+  }
 
   return (
     <ChartWrapper>
@@ -162,42 +187,7 @@ const BalanceChart = () => {
               beginAtZero: true,
             },
           },
-          annotation: {
-            annotations: [
-              {
-                type: 'line',
-                mode: 'horizontal',
-                scaleID: 'y-axis-0',
-                value: 300, // @TODO from variable
-                borderColor: 'red',
-                borderWidth: 1,
-                label: {
-                  content: 'Absolute minimum',
-                  backgroundColor: 'rgba(0,0,0,0.15)',
-                  color: 'rgb(255, 0, 0)',
-                  position: 'top',
-                  textAlign: 'end',
-                  enabled: true,
-                },
-              },
-              {
-                type: 'line',
-                mode: 'horizontal',
-                scaleID: 'y-axis-0',
-                value: minBalance,
-                borderColor: 'red',
-                borderWidth: 1,
-                label: {
-                  content: 'Today minimum',
-                  backgroundColor: 'rgba(0,0,0,0.15)',
-                  color: 'rgb(255, 0, 0)',
-                  position: 'top',
-                  textAlign: 'end',
-                  enabled: true,
-                },
-              },
-            ],
-          },
+          annotation: { annotations },
         }}
       />
     </ChartWrapper>

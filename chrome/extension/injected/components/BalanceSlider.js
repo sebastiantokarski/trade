@@ -18,8 +18,8 @@ const BalanceSlider = () => {
   ].sort((a, b) => a.value - b.value);
 
   const sliderRange = {
-    min: minBalance * 0.9,
-    max: targetBalance * 1.2,
+    min: minBalance ? minBalance * 0.9 : 0,
+    max: targetBalance ? targetBalance * 1.2 : 100,
   };
 
   const sliderTooltips = sliderPoints.map(() => true);

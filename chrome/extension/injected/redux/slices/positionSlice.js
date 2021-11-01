@@ -7,7 +7,9 @@ const initialState = {
   plValue: null,
 };
 
-const position = createSlice({
+let positionObserver = null;
+
+const slice = createSlice({
   name: 'position',
   initialState,
   reducers: {
@@ -26,14 +28,14 @@ const position = createSlice({
   },
 });
 
-export const { updatePosition, removePosition } = position.actions;
+export const { updatePosition, removePosition } = slice.actions;
 
-export default position.reducer;
+export default slice.reducer;
 
 export const startObservingPosition = () => async (dispatch, getState) => {
   const positionsPanel = document.querySelector('[data-qa-id="positions"]');
 
-  const observer = new MutationObserver(() => {
+  positionObserver = new MutationObserver(() => {
     const positionsTable = document.querySelector('[data-qa-id="positions-table"]');
 
     try {
@@ -58,4 +60,10 @@ export const startObservingPosition = () => async (dispatch, getState) => {
     subtree: true,
     characterData: true,
   });
+};
+
+export const stopObservingPosition = () => {
+  if (positionObserver) {
+    positionObserver.disconnect();
+  }
 };
