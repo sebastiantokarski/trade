@@ -43,10 +43,10 @@ export const timeSince = (timestamp) => {
 
 export const getSymbolFromUrl = () =>
   window.location.pathname
-    .replace(/\/|:/g, '')
-    .replace('DOGEUSD', 'DOGE:USD')
-    .replace('AVAXUSD', 'AVAX:USD')
-    .replace('MATICUSD', 'MATIC:USD');
+    .replace(/\//g, '')
+    .replace(/t(.*):USD/, (capture, match) =>
+      match.length > 3 ? capture : capture.replace(/:/, '')
+    );
 
 export const getTodayMidnightTime = () => {
   const todayMidnight = new Date();
