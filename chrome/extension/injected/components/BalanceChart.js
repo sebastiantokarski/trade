@@ -19,7 +19,7 @@ const DateBtn = styled.button`
   }
 `;
 
-const chartPeriods = ['Day', 'Week', 'Month', 'Year', 'Max'];
+const chartPeriods = ['Day', 'Week', 'Month', 'Quarter', 'Year'];
 
 const BalanceChart = () => {
   const [chartPeriod, setChartPeriod] = useState(chartPeriods[0]);
@@ -61,6 +61,10 @@ const BalanceChart = () => {
       return lastWeek.getTime() < new Date(timestamp).getTime();
     } else if (chartPeriod === 'Month') {
       const lastMonth = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 30);
+
+      return lastMonth.getTime() < new Date(timestamp).getTime();
+    } else if (chartPeriod === 'Quarter') {
+      const lastMonth = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 91);
 
       return lastMonth.getTime() < new Date(timestamp).getTime();
     } else if (chartPeriod === 'Year') {

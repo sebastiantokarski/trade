@@ -50,7 +50,7 @@ const MarginForm = () => {
   const [risk, setRisk] = useState();
 
   const { currBalance } = useSelector((state) => state.account);
-  const { isActive, plValue } = useSelector((state) => state.position);
+  const { isActive, plValue, type, price } = useSelector((state) => state.position);
   const { leverage, symbol } = useSelector((state) => state.pageInfo);
 
   const blockMarginActions = false; // currBalance < minBalance;
@@ -62,10 +62,15 @@ const MarginForm = () => {
 
     const order = orders[0];
 
-    if (order.type === 'STOP' && order.symbol === symbol) {
-      console.log(order);
+    if (type && order.type === 'STOP' && order.symbol === symbol) {
+      // @TODO Set risk
+      if (type === 'buy' && order.amount < 0) {
+        console.log(price / order.price);
+      } else if (type === 'sell' && order.amount > 0) {
+        console.log(price / order.price);
+      }
     }
-  }, [symbol, retrieveOrders]);
+  }, [symbol, type, retrieveOrders]);
 
   const cancelStopOrder = async () => {
     const ordersResponse = await fetchData('v2/auth/r/orders');
