@@ -3,7 +3,7 @@ import SimpleBar from 'simplebar-react';
 import styled from 'styled-components';
 import { useInterval } from '../hooks';
 import { MainWrapper, Title } from '../theme';
-import { getData } from '../utils';
+import { getData, getSymbolFromPathname } from '../utils';
 import { TICKERS_STATUS_INTERVAL } from '../../config';
 
 const BlockText = styled.span`
@@ -29,7 +29,7 @@ const TickersStatus = () => {
     const updatedTickersHistory = {};
 
     const setTickerPrice = (ticker, propName) => {
-      const symbol = ticker[0].replace(/^t|USD/g, '');
+      const symbol = getSymbolFromPathname(ticker[0]);
       const avgPrice = (ticker[1] + ticker[3]) / 2;
 
       updatedTickersHistory[symbol] = updatedTickersHistory[symbol] || {};
@@ -37,7 +37,9 @@ const TickersStatus = () => {
     };
 
     if (tickersNodes.length) {
-      const symbols = [...tickersNodes].map((node) => node.pathname.replace(/\/|:/g, '')).join(',');
+      const symbols = [...tickersNodes]
+        .map((node) => getSymbolFromPathname(node.pathname))
+        .join(',');
 
       const currTime = new Date().getTime();
       const tenSeconds = 10000;
@@ -94,7 +96,7 @@ const TickersStatus = () => {
 
             return (
               <div key={`${index}_ticker`} style={{ fontSize: '13px' }}>
-                <BlockText>{symbol}</BlockText>
+                <BlockText>{symbol.replace(/^t|:|USD/g, '')}</BlockText>
                 <BlockText className={fourHoursChange > 0 ? 'bfx-green-text' : 'bfx-red-text'}>
                   {isNaN(fourHoursChange) ? '-' : `${fourHoursChange} %`}
                 </BlockText>

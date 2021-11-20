@@ -1,7 +1,7 @@
 import {
   fetchData,
   getData,
-  getSymbolFromUrl,
+  getSymbolFromPathname,
   log,
   manageRisk,
   getWebsocketAuthData,
@@ -10,7 +10,7 @@ import { WEBSOCKET_API_HOST } from '../config';
 
 export const getMarginInfo = async () => {
   try {
-    const marginInfoResponse = await fetchData(`v2/auth/r/info/margin/${getSymbolFromUrl()}`);
+    const marginInfoResponse = await fetchData(`v2/auth/r/info/margin/${getSymbolFromPathname()}`);
     const getSafeAmount = (value) => value * 0.995;
 
     return {
@@ -114,7 +114,7 @@ export const getLedgersHistory = async (query) => {
 
 export const getCurrTickerInfo = async () => {
   try {
-    const tickerResponse = await getData(`v2/ticker/${getSymbolFromUrl()}`);
+    const tickerResponse = await getData(`v2/ticker/${getSymbolFromPathname()}`);
 
     return {
       bid: tickerResponse[0],
@@ -137,7 +137,7 @@ export const submitMarketOrder = async (amount) => {
   try {
     await fetchData('v2/auth/w/order/submit', {
       type: 'MARKET',
-      symbol: getSymbolFromUrl(),
+      symbol: getSymbolFromPathname(),
       amount: amount.toFixed(4),
     });
   } catch (ex) {
@@ -149,7 +149,7 @@ export const createStopOrder = async (type, amount, price, risk, leverage) => {
   try {
     await fetchData('v2/auth/w/order/submit', {
       type: 'STOP',
-      symbol: getSymbolFromUrl(),
+      symbol: getSymbolFromPathname(),
       amount: (amount * -1).toString(),
       price: manageRisk(type, price, risk, leverage).toFixed(4),
     });

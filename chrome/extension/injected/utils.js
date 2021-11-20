@@ -41,12 +41,15 @@ export const timeSince = (timestamp) => {
   return `${Math.round(elapsed / msPerYear)} years ago`;
 };
 
-export const getSymbolFromUrl = () =>
-  window.location.pathname
+export const getSymbolFromPathname = (pathname) => {
+  pathname = pathname || window.location.pathname;
+
+  return pathname
     .replace(/\//g, '')
     .replace(/t(.*):USD/, (capture, match) =>
       match.length > 3 ? capture : capture.replace(/:/, '')
     );
+};
 
 export const getTodayMidnightTime = () => {
   const todayMidnight = new Date();

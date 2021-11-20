@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getSymbolFromUrl } from '../../utils';
+import { getSymbolFromPathname } from '../../utils';
 
 const initialState = {
   leverage: 1,
@@ -65,7 +65,7 @@ export const observeCurrToken = () => async (dispatch, getState) => {
 
   const handleSymbolChange = () => {
     const { symbol } = getState().pageInfo;
-    const currSymbol = getSymbolFromUrl();
+    const currSymbol = getSymbolFromPathname();
 
     if (symbol !== currSymbol) {
       dispatch(updateSymbol(currSymbol));
