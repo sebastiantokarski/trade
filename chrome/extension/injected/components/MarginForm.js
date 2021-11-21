@@ -91,10 +91,10 @@ const MarginForm = () => {
     if (marketAmount !== 0) {
       const modMarketAmount = isActive && plValue > 0 ? marketAmount - plValueMod : marketAmount;
 
-      if (plValue > 0) {
-        await transferUSDToExchangeWallet(plValue * 0.15);
-      }
-
+      // @TODO transfer only on demand
+      // if (plValue > 0) {
+      //   await transferUSDToExchangeWallet(plValue * 0.15);
+      // }
       await submitMarketOrder(modMarketAmount);
     }
 
