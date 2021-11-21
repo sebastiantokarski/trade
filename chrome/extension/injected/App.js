@@ -51,7 +51,7 @@ const App = () => {
     dispatch(fetchPageInfo());
     dispatch(startObservingPosition());
 
-    return stopObservingPosition;
+    return () => dispatch(stopObservingPosition());
   }, [dispatch]);
 
   useEffect(() => {

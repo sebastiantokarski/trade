@@ -167,4 +167,4 @@ const MarginForm = () => {
   );
 };
 
-export default MarginForm;
+export default React.memo(MarginForm);

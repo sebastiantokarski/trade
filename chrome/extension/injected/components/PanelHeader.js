@@ -46,4 +46,4 @@ const PanelHeader = () => {
   );
 };
 
-export default PanelHeader;
+export default React.memo(PanelHeader);
