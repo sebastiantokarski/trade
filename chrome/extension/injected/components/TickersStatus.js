@@ -73,6 +73,15 @@ const TickersStatus = () => {
     }
   }, TICKERS_STATUS_INTERVAL);
 
+  const getBlockTextProps = (value) => {
+    if (value > 3) {
+      return { style: { fontWeight: 'bold', color: '#05ff84e3' } };
+    } else if (value < -3) {
+      return { style: { fontWeight: 'bold', color: 'rgb(223 43 43)' } };
+    }
+    return { className: value > 0 ? 'bfx-green-text' : 'bfx-red-text' };
+  };
+
   return (
     <MainWrapper>
       <Title>
@@ -97,13 +106,13 @@ const TickersStatus = () => {
             return (
               <div key={`${index}_ticker`} style={{ fontSize: '13px' }}>
                 <BlockText>{symbol.replace(/^t|:|USD/g, '')}</BlockText>
-                <BlockText className={fourHoursChange > 0 ? 'bfx-green-text' : 'bfx-red-text'}>
+                <BlockText {...getBlockTextProps(fourHoursChange)}>
                   {isNaN(fourHoursChange) ? '-' : `${fourHoursChange} %`}
                 </BlockText>
-                <BlockText className={thirtyMinutesChange > 0 ? 'bfx-green-text' : 'bfx-red-text'}>
+                <BlockText {...getBlockTextProps(thirtyMinutesChange)}>
                   {isNaN(thirtyMinutesChange) ? '-' : `${thirtyMinutesChange} %`}
                 </BlockText>
-                <BlockText className={tenMinutesChange > 0 ? 'bfx-green-text' : 'bfx-red-text'}>
+                <BlockText {...getBlockTextProps(tenMinutesChange)}>
                   {isNaN(tenMinutesChange) ? '-' : `${tenMinutesChange} %`}
                 </BlockText>
               </div>
