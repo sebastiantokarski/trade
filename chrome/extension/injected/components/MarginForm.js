@@ -85,23 +85,22 @@ const MarginForm = () => {
     await cancelStopOrder();
 
     const marginInfo = await getMarginInfo();
-    const plValueMod = type === 'buy' ? plValue * 0.15 : plValue * -0.15;
+    // const plValueMod = type === 'buy' ? plValue * 0.15 : plValue * -0.15;
     const marketAmount = type === 'buy' ? marginInfo.buy : marginInfo.sell * -1;
 
     if (marketAmount !== 0) {
-      const modMarketAmount = isActive && plValue > 0 ? marketAmount - plValueMod : marketAmount;
-
       // @TODO transfer only on demand
+      // const modMarketAmount = isActive && plValue > 0 ? marketAmount - plValueMod : marketAmount;
       // if (plValue > 0) {
       //   await transferUSDToExchangeWallet(plValue * 0.15);
       // }
-      await submitMarketOrder(modMarketAmount);
+      await submitMarketOrder(marketAmount);
     }
 
     const positions = await retrievePositions();
 
     if (positions[0]) {
-      const { amount, price } = positions[0];
+      const { amount } = positions[0];
 
       await createStopOrder(type, amount, price, risk, leverage);
     }
