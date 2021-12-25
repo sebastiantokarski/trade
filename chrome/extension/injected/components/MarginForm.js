@@ -50,7 +50,7 @@ const MarginForm = () => {
   const [risk, setRisk] = useState();
 
   const { currBalance } = useSelector((state) => state.account);
-  const { isActive, plValue, type, price } = useSelector((state) => state.position);
+  const { isActive, type, amount, price } = useSelector((state) => state.position);
   const { leverage, symbol } = useSelector((state) => state.pageInfo);
 
   const blockMarginActions = false; // currBalance < minBalance;
@@ -97,13 +97,11 @@ const MarginForm = () => {
       await submitMarketOrder(marketAmount);
     }
 
-    const positions = await retrievePositions();
-
-    if (positions[0]) {
-      const { amount } = positions[0];
-
-      await createStopOrder(type, amount, price, risk, leverage);
-    }
+    setTimeout(() => {
+      if (isActive) {
+        createStopOrder(type, amount, price, risk, leverage);
+      }
+    }, 1000);
   };
 
   const handleRiskChange = (ev) => {

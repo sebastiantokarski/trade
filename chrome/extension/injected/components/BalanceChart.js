@@ -140,6 +140,7 @@ const BalanceChart = () => {
               label: 'Balance',
               fill: true,
               pointRadius: 0,
+              tension: 0,
               borderWidth: 2,
               borderColor: '#42A5F5',
               data: chartData,
@@ -172,6 +173,10 @@ const BalanceChart = () => {
             {
               type: 'time',
               time: {
+                unit: 'minute',
+                round: true,
+                min: new Date(new Date().setHours(0, 0, 0, 0)).getTime(),
+                max: new Date().getTime(),
                 displayFormats: {
                   millisecond: 'MMM DD',
                   second: 'MMM DD',
