@@ -173,10 +173,7 @@ const BalanceChart = () => {
             {
               type: 'time',
               time: {
-                unit: 'minute',
                 round: true,
-                min: new Date(new Date().setHours(0, 0, 0, 0)).getTime(),
-                max: new Date().getTime(),
                 displayFormats: {
                   millisecond: 'MMM DD',
                   second: 'MMM DD',

@@ -36,6 +36,12 @@ export const { updatePosition, removePosition } = slice.actions;
 
 export default slice.reducer;
 
+export const stopObservingPosition = () => {
+  if (positionObserver) {
+    positionObserver.disconnect();
+  }
+};
+
 export const startObservingPosition = () => async (dispatch, getState) => {
   const positionsPanel = document.querySelector('[data-qa-id="positions"]');
 
@@ -63,6 +69,7 @@ export const startObservingPosition = () => async (dispatch, getState) => {
         dispatch(removePosition());
       }
     } catch (ex) {
+      stopObservingPosition();
       log('error', 'FAILED OBSERVING POSITION', ex);
     }
   }).observe(positionsPanel, {
@@ -70,10 +77,4 @@ export const startObservingPosition = () => async (dispatch, getState) => {
     subtree: true,
     characterData: true,
   });
-};
-
-export const stopObservingPosition = () => {
-  if (positionObserver) {
-    positionObserver.disconnect();
-  }
 };

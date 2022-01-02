@@ -12,6 +12,15 @@ const BlockText = styled.span`
   text-align: center;
 `;
 
+const CustomMainWrapper = styled(MainWrapper)`
+  &.high-ticker {
+    background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='20' ry='20' stroke='%2356EC3AFF' stroke-width='7' stroke-dasharray='15%2c 15%2c 1' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e");
+    border-radius: 20px;
+  }
+`;
+
+let isAnyTickerHigh = false;
+
 const TickersStatus = () => {
   const refreshTime = TICKERS_STATUS_INTERVAL / 1000;
 
@@ -70,20 +79,24 @@ const TickersStatus = () => {
       }
       setTimeToRefresh(refreshTime);
       setTickersHistory(updatedTickersHistory);
+      isAnyTickerHigh = false;
     }
   }, TICKERS_STATUS_INTERVAL);
 
   const getBlockTextProps = (value) => {
-    if (value > 3) {
+    if (value > 2) {
+      isAnyTickerHigh = true;
       return { style: { fontWeight: 'bold', color: '#05ff84e3' } };
     } else if (value < -3) {
+      isAnyTickerHigh = true;
       return { style: { fontWeight: 'bold', color: 'rgb(223 43 43)' } };
     }
+
     return { className: value > 0 ? 'bfx-green-text' : 'bfx-red-text' };
   };
 
   return (
-    <MainWrapper>
+    <CustomMainWrapper className={isAnyTickerHigh ? 'high-ticker' : undefined}>
       <Title>
         Tickers Status <span>{timeToRefresh}s</span>
       </Title>
@@ -119,7 +132,7 @@ const TickersStatus = () => {
             );
           })}
       </SimpleBar>
-    </MainWrapper>
+    </CustomMainWrapper>
   );
 };
 
