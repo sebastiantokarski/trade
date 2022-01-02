@@ -84,7 +84,7 @@ const TickersStatus = () => {
   }, TICKERS_STATUS_INTERVAL);
 
   const getBlockTextProps = (value) => {
-    if (value > 2) {
+    if (value > 3) {
       isAnyTickerHigh = true;
       return { style: { fontWeight: 'bold', color: '#05ff84e3' } };
     } else if (value < -3) {
