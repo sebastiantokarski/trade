@@ -14,6 +14,7 @@ import {
 } from './components';
 import { startObservingPosition, stopObservingPosition } from './redux/slices/positionSlice';
 import { fetchPageInfo } from './redux/slices/pageInfoSlice';
+import { fetchLedgers } from './redux/slices/accountSlice';
 import { WARNING_MODE_CLASS } from '../config';
 
 Chart.plugins.register([ChartAnnotation]);
@@ -48,6 +49,7 @@ const App = () => {
   const { minBalance, currBalance } = useSelector((state) => state.account);
 
   useEffect(() => {
+    dispatch(fetchLedgers());
     dispatch(fetchPageInfo());
     dispatch(startObservingPosition());
 

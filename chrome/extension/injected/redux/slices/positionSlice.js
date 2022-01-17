@@ -60,12 +60,12 @@ export const startObservingPosition = () => async (dispatch, getState) => {
           updatePosition({
             type: buyEl ? 'buy' : 'sell',
             amount: Number(amountEl.textContent.replace(',', '')),
-            price: Number(priceEl.textContent),
+            price: Number(priceEl.textContent.replace(',', '')),
             plValue: Number(plValueEl.textContent.replace(',', '')),
             plPerc: Number(plPercEl.textContent),
           })
         );
-      } else if (!positionsTable && getState().position.isActive) {
+      } else if (!positionsTable) {
         dispatch(removePosition());
       }
     } catch (ex) {

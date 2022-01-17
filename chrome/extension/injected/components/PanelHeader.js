@@ -27,7 +27,9 @@ const PanelHeader = () => {
   const { performDataSuccess } = useSelector((state) => state.account);
 
   useEffect(() => {
-    dispatch(fetchLedgers());
+    if (refreshCount) {
+      dispatch(fetchLedgers());
+    }
   }, [dispatch, refreshCount]);
 
   return (
