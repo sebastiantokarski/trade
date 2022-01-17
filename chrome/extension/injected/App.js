@@ -9,13 +9,15 @@ import {
   MarginForm,
   LastChanges,
   Statistics,
+  EndOfDayPopup,
   StartTradeDayPopup,
   TickersStatus,
 } from './components';
+import { isDateFromToday } from './utils';
 import { startObservingPosition, stopObservingPosition } from './redux/slices/positionSlice';
 import { fetchPageInfo } from './redux/slices/pageInfoSlice';
 import { fetchLedgers } from './redux/slices/accountSlice';
-import { WARNING_MODE_CLASS } from '../config';
+import { WARNING_MODE_CLASS, NUMBER_OF_ATTEMPTS } from '../config';
 
 Chart.plugins.register([ChartAnnotation]);
 
@@ -44,9 +46,11 @@ const App = () => {
   const dispatch = useDispatch();
 
   const [warningMode, setWarningMode] = useState(false);
+  const [endOfTrade, setEndOfTrade] = useState(false);
+  const [numberOfAttempts, setNumberOfAttempts] = useState(NUMBER_OF_ATTEMPTS);
 
   const { plPerc } = useSelector((state) => state.position);
-  const { minBalance, currBalance } = useSelector((state) => state.account);
+  const { ledgers, minBalance, currBalance } = useSelector((state) => state.account);
 
   useEffect(() => {
     dispatch(fetchLedgers());
@@ -90,9 +94,24 @@ const App = () => {
     };
   }, [warningMode]);
 
+  useEffect(() => {
+    const todayPositionsOnMinus = ledgers
+      .filter((ledger) => ledger.description && ledger.description.match('Position closed'))
+      .filter((ledger) => isDateFromToday(ledger.timestamp))
+      .filter((ledger) => ledger.amout < 0);
+
+    setNumberOfAttempts((currNumber) => currNumber - todayPositionsOnMinus.length);
+  }, [ledgers]);
+
+  useEffect(() => {
+    if (numberOfAttempts <= 0) {
+      setEndOfTrade(true);
+    }
+  }, [numberOfAttempts]);
+
   return (
     <AppWrapper className="injected_by_extension">
-      <PanelHeader />
+      <PanelHeader numberOfAttempts={numberOfAttempts} />
       <ContentWrapper>
         <ContentContainer width={'33%'}>
           <MarginForm />
@@ -111,6 +130,7 @@ const App = () => {
         <BalanceChart />
       </ChartContainer>
       <StartTradeDayPopup />
+      <EndOfDayPopup isOpen={endOfTrade} />
     </AppWrapper>
   );
 };

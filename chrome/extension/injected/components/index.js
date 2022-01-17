@@ -7,6 +7,7 @@ import Statistics from './Statistics';
 import PanelHeader from './PanelHeader';
 import StartTradeDayPopup from './StartTradeDayPopup';
 import TickersStatus from './TickersStatus';
+import EndOfDayPopup from './EndOfDayPopup';
 
 export {
   BalanceChart,
@@ -18,4 +19,5 @@ export {
   PanelHeader,
   StartTradeDayPopup,
   TickersStatus,
+  EndOfDayPopup,
 };

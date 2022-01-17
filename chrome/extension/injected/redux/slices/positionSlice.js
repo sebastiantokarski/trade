@@ -28,6 +28,7 @@ const slice = createSlice({
     },
     removePosition(state) {
       state = initialState;
+      chrome.runtime.sendMessage({ badgeValue: null });
     },
   },
 });

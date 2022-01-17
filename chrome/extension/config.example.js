@@ -38,3 +38,7 @@ export const RISK_OPTIONS = {
 
 export const WARNING_MODE_CLASS = 'warning-mode';
 export const STORAGE_STR = '_str';
+
+export const MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+export const NUMBER_OF_ATTEMPTS = 2;

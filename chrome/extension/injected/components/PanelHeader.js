@@ -19,7 +19,7 @@ const RefreshIcon = styled.i`
   margin-right: 0.4rem;
 `;
 
-const PanelHeader = () => {
+const PanelHeader = ({ numberOfAttempts }) => {
   const dispatch = useDispatch();
 
   const [refreshCount, setRefreshCount] = useState(0);
@@ -43,6 +43,9 @@ const PanelHeader = () => {
           <span className="ui-collapsible__title">Refresh</span>
         </div>
         <div style={{ width: '60%' }}>{performDataSuccess && <BalanceSlider />}</div>
+        <div style={{ width: '20%', textAlign: 'right' }}>
+          <span>Number of attempts: {numberOfAttempts}</span>
+        </div>
       </HeaderWrapper>
     </Header>
   );
