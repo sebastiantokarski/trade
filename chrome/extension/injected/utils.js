@@ -44,11 +44,16 @@ export const timeSince = (timestamp) => {
 export const getSymbolFromPathname = (pathname) => {
   pathname = pathname || window.location.pathname;
 
-  return pathname
+  const symbol = pathname
     .replace(/\//g, '')
     .replace(/t(.*):USD/, (capture, match) =>
       match.length > 3 ? capture : capture.replace(/:/, '')
     );
+
+  if (symbol === 't') {
+    return 'tBTCUSD';
+  }
+  return symbol;
 };
 
 export const getTodayMidnightTime = () => {
